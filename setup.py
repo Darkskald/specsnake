@@ -8,7 +8,11 @@ setup(
     license='MIT',
     author='Darkskald',
     author_email='floriandavid.lange@web.de',
-    description=''
+    description='',
+    entry_points='''
+        [console_scripts]
+        cli=cli:hello
+    ''',
 )
 
 # todo: install requirements with the help of this file
