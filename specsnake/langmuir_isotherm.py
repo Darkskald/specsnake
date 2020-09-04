@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from SFG.spectrum.base_spectrum import BaseSpectrum
+from specsnake.base_spectrum import BaseSpectrum
 
 
 class LtIsotherm(BaseSpectrum):

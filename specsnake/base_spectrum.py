@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.integrate import simps as sp
 from scipy.integrate import trapz as tp
 
-from SFG.spectrum.exceptions import InvalidSpectrumError, IntegrationError
+from specsnake.exceptions import InvalidSpectrumError, IntegrationError
 
 
 class MetaSpectrum(type):
@@ -59,7 +59,7 @@ class BaseSpectrum(metaclass=MetaSpectrum):
         if external is None:
             return np.max(self.y)
         else:
-            return self.y/external
+            return self.y / external
 
     def integrate_slice(self, x_array, y_array):
         """Integrates the y_array which has a spacing given by the x_array. First it tries to apply
@@ -78,17 +78,17 @@ class BaseSpectrum(metaclass=MetaSpectrum):
     # export functions
     def properties_to_dict(self):
         temp = {
-                "name": self.name,
-                "x_unit": self.x_unit,
-                "y_unit": self.y_unit,
-                "x": self.x,
-                "y": self.y,
-                "timestamp": self.timestamp
-                }
+            "name": self.name,
+            "x_unit": self.x_unit,
+            "y_unit": self.y_unit,
+            "x": self.x,
+            "y": self.y,
+            "timestamp": self.timestamp
+        }
         return temp
 
     def to_pandas_dataframe(self) -> pd.DataFrame:
-       pd.DataFrame(data=self.properties_to_dict())
+        return pd.DataFrame(data=self.properties_to_dict())
 
     def to_csv(self) -> None:
         self.to_pandas_dataframe().to_csv(self.name + ".csv", index=False, sep=";")
@@ -96,7 +96,3 @@ class BaseSpectrum(metaclass=MetaSpectrum):
     def to_json(self) -> str:
         temp = self.properties_to_dict()
         return json.dumps(temp)
-
-
-
-
