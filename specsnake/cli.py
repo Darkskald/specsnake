@@ -1,13 +1,16 @@
 import click
 
+from specsnake.tools import to_sfg
+
+
 @click.command()
-@click.option('--count', default=1, help='Number of greetings.')
+#@click.option('--count', default=1, help='Number of greetings.')
 @click.option('--name', prompt='Your name',
               help='The person to greet.')
-def hello(count, name):
+def hello(name):
     """Simple program that greets NAME for a total of COUNT times."""
-    for x in range(count):
-        click.echo('Hello %s!' % name)
+    print(to_sfg(name))
+
 
 if __name__ == '__main__':
     hello()
