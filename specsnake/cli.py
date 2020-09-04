@@ -1,6 +1,6 @@
 import click
 
-from specsnake.tools import to_sfg
+from specsnake.tools import to_sfg, load_sfg
 
 
 @click.command()
@@ -9,8 +9,7 @@ from specsnake.tools import to_sfg
               help='The person to greet.')
 def hello(name):
     """Simple program that greets NAME for a total of COUNT times."""
-    print(to_sfg(name))
-
+    print(load_sfg()(name))
 
 if __name__ == '__main__':
     hello()
