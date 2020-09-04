@@ -1,17 +1,21 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='specsnake',
     version='0.0.0.1',
-    packages=['specsnake'],
+    packages=find_packages(),
     url='https://github.com/Darkskald/specsnake',
     license='MIT',
     author='Darkskald',
     author_email='floriandavid.lange@web.de',
     description='',
+    include_package_data=True,
+    install_requires=[
+        'Click',
+    ],
     entry_points='''
         [console_scripts]
-        cli=cli:hello
+        cli=specsnake.cli:hello
     ''',
 )
 
