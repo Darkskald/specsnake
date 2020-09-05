@@ -11,6 +11,12 @@ def cli():
 
 @cli.command()
 @click.argument('filename')
-def plot(filename):
-    temp = load_sfg()(filename)
-    Plotter([temp]).show()
+@click.option('--save/--no-save',  ' -s/-i', default=False)
+def plot(filename, save):
+    temp = Plotter([load_sfg()(filename)])
+    if save:
+        temp.save()
+    else:
+        temp.show()
+
+

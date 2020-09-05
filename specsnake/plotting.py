@@ -1,7 +1,7 @@
+from typing import List
+
 import matplotlib.pyplot as plt
 import numpy as np
-from astroid import List
-
 from specsnake.base_spectrum import BaseSpectrum
 
 # todo add support for plot file
@@ -11,7 +11,7 @@ class Plotter:
 
     # todo: custom title, label
 
-    def __init__(self, specs: List[BaseSpectrum], title=""):
+    def __init__(self, specs: List[BaseSpectrum], title="default"):
         self.specs = specs
         self.title = title
 
@@ -19,8 +19,8 @@ class Plotter:
         for s in self.specs:
             label = s.name if show_label else None
             plt.plot(s.x, s.y, label=label)
-        plt.xlabel(self.specs[0].x_label)
-        plt.ylabel(self.specs[0].y_label)
+        plt.xlabel(self.specs[0].x_unit)
+        plt.ylabel(self.specs[0].y_unit)
         plt.legend()
 
     def show(self):
@@ -29,4 +29,4 @@ class Plotter:
 
     def save(self):
         self.plot()
-        plt.savefig(f'{self.title}'.png)
+        plt.savefig(f'{self.title}.png')
