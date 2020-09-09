@@ -24,7 +24,7 @@ def to_spectrum(file, extractor, constructor) -> BaseSpectrum:
 
 
 def sfg_extractor(file) -> pd.DataFrame:
-    """A function extracting the measurement data from a SFG spectral file """
+    """A function extracting the measurement data from a SFG spectral file"""
     col_names = ['wavenumbers', 'sfg', 'ir', 'vis']
     return pd.read_csv(file, sep="\t", usecols=[0, 1, 3, 4], names=col_names, encoding='utf8', engine='c')
 
