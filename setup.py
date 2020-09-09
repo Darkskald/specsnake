@@ -9,6 +9,8 @@ setup(
     author='Darkskald',
     author_email='floriandavid.lange@web.de',
     description='',
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     include_package_data=True,
     install_requires=[
         'Click',

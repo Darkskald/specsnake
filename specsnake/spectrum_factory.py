@@ -3,6 +3,7 @@ import datetime
 from pathlib import Path
 
 from specsnake.builtin_loaders import sfg_extractor, sfg_constructor, lt_extractor, lt_constructor
+from specsnake.exceptions import SpectrumTypeNotAvailableError
 
 
 class SpectrumFactoryProvider:
@@ -11,14 +12,20 @@ class SpectrumFactoryProvider:
         self.config = config
 
     def provide_factory_by_name(self, name: str):
-        return CustomSpectrumFactory(**self.config[name])
+        try:
+            return CustomSpectrumFactory(**self.config[name])
+        except KeyError:
+            raise SpectrumTypeNotAvailableError("The spectrum type you requested is not available!")
+
+    def add_new_template(self, name, extractor, constructor, name_transformer=None):
+        self.config[name] = {'extractor': extractor, 'constructor': constructor, 'name_transformer': name_transformer}
 
 
 class CustomSpectrumFactory:
     # todo: add signatures for the callable parameters here
     def __init__(self, extractor, constructor, name_transformer=None):
         """Configure the factory to create spectrum objects from raw measurement data. The extractor is a function that extracts
-        the data from the file, the constructor is responsible for the instanciation of the spectrum objects and the
+        the data from the file, the constructor is responsible for the instantiation of the spectrum objects and the
         optional name transformer processes the file name to a representation suitable to appear in a plot legend."""
         self.extractor = extractor
         self.constructor = constructor
