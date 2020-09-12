@@ -2,8 +2,8 @@ import os
 import datetime
 from pathlib import Path
 
-from specsnake.builtin_loaders import sfg_extractor, sfg_constructor, lt_extractor, lt_constructor
-from specsnake.exceptions import SpectrumTypeNotAvailableError
+from .builtin_loaders import sfg_extractor, sfg_constructor, lt_extractor, lt_constructor
+from .exceptions import SpectrumTypeNotAvailableError
 
 
 class SpectrumFactoryProvider:

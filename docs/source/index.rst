@@ -8,39 +8,39 @@ Welcome to specsnake's documentation!
 
 base_spectrum
 ==============
-.. automodule:: base_spectrum
+.. automodule:: specsnake.base_spectrum
    :members:
 
 spectrum_factory
 ================
-.. automodule:: spectrum_factory
+.. automodule:: specsnake.spectrum_factory
    :members:
 
 builtin_loaders
 ================
-.. automodule:: builtin_loaders
+.. automodule:: specsnake.builtin_loaders
    :members:
 
 sfg_spectrum
 ================
-.. automodule:: sfg_spectrum
+.. automodule:: specsnake.sfg_spectrum
    :members:
 
 langmuir_isotherm
 =================
-.. automodule:: langmuir_isotherm
+.. automodule:: specsnake.langmuir_isotherm
    :members:
    :show-inheritance:
 
 plotting
 ========
-.. automodule:: plotting
+.. automodule:: specsnake.plotting
    :members:
    :show-inheritance:
 
 exceptions
 ==========
-.. automodule:: exceptions
+.. automodule:: specsnake.exceptions
    :members:
    :show-inheritance:
 

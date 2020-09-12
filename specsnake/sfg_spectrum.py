@@ -9,8 +9,8 @@ import peakutils
 from matplotlib import pyplot as plt
 from scipy.integrate import simps as sp, trapz as tp
 
-from specsnake.base_spectrum import BaseSpectrum
-from specsnake.exceptions import CoverageCalculationImpossibleError
+from .base_spectrum import BaseSpectrum
+from .exceptions import CoverageCalculationImpossibleError
 
 
 class SfgSpectrum(BaseSpectrum):

@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.integrate import simps as sp
 from scipy.integrate import trapz as tp
 
-from specsnake.exceptions import InvalidSpectrumError, IntegrationError
+from .exceptions import InvalidSpectrumError, IntegrationError
 
 
 class MetaSpectrum(type):

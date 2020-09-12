@@ -1,7 +1,7 @@
 import pandas as pd
 
-from specsnake.langmuir_isotherm import LtIsotherm
-from specsnake.sfg_spectrum import SfgSpectrum
+from .langmuir_isotherm import LtIsotherm
+from .sfg_spectrum import SfgSpectrum
 
 
 # SFG

@@ -3,8 +3,8 @@ from pathlib import Path
 
 import click
 
-from specsnake.plotting import Plotter
-from specsnake.spectrum_factory import global_provider
+from .plotting import Plotter
+from .spectrum_factory import global_provider
 
 
 @click.group()
