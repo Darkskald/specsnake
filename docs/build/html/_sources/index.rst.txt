@@ -30,25 +30,30 @@ langmuir_isotherm
 =================
 .. automodule:: langmuir_isotherm
    :members:
+   :show-inheritance:
 
 plotting
 ========
 .. automodule:: plotting
    :members:
+   :show-inheritance:
 
 exceptions
 ==========
 .. automodule:: exceptions
    :members:
+   :show-inheritance:
 
 cli
 ====
 .. automodule:: cli
    :members:
+   :show-inheritance:
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
 
 
 
