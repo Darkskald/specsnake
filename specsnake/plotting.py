@@ -8,7 +8,6 @@ from specsnake.base_spectrum import BaseSpectrum
 
 # todo add support for plot file
 
-plt.style.use(pathlib.Path(__file__).parent.absolute() / 'origin.mpltstyle')
 class Plotter:
 
     # todo: custom title, label

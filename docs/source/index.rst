@@ -44,19 +44,6 @@ exceptions
    :members:
    :show-inheritance:
 
-cli
-====
-.. automodule:: cli
-   :members:
-   :show-inheritance:
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-
-
-
 Indices and tables
 ==================
 
