@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to specsnake’s documentation! &mdash; specsnake 0.0.0.7 documentation</title>
+  <title>Specsnake &mdash; specsnake 0.0.0.7 documentation</title>
   
 
   
@@ -82,14 +82,15 @@
             
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Welcome to specsnake’s documentation!</a></li>
+<li><a class="reference internal" href="#">Specsnake</a></li>
 <li><a class="reference internal" href="#module-specsnake.base_spectrum">base_spectrum</a></li>
-<li><a class="reference internal" href="#module-specsnake.spectrum_factory">spectrum_factory</a></li>
 <li><a class="reference internal" href="#module-specsnake.builtin_loaders">builtin_loaders</a></li>
-<li><a class="reference internal" href="#module-specsnake.sfg_spectrum">sfg_spectrum</a></li>
+<li><a class="reference internal" href="#module-specsnake.cli">command line interface (cli)</a></li>
+<li><a class="reference internal" href="#module-specsnake.exceptions">exceptions</a></li>
 <li><a class="reference internal" href="#module-specsnake.langmuir_isotherm">langmuir_isotherm</a></li>
 <li><a class="reference internal" href="#module-specsnake.plotting">plotting</a></li>
-<li><a class="reference internal" href="#module-specsnake.exceptions">exceptions</a></li>
+<li><a class="reference internal" href="#module-specsnake.spectrum_factory">spectrum_factory</a></li>
+<li><a class="reference internal" href="#module-specsnake.sfg_spectrum">sfg_spectrum</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </div>
@@ -137,7 +138,7 @@
     
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Welcome to specsnake’s documentation!</li>
+      <li>Specsnake</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -156,14 +157,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-specsnake-s-documentation">
-<h1>Welcome to specsnake’s documentation!<a class="headerlink" href="#welcome-to-specsnake-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="specsnake">
+<h1>Specsnake<a class="headerlink" href="#specsnake" title="Permalink to this headline">¶</a></h1>
+<p># specsnake</p>
+<p>this is dummy text</p>
 </div>
 <div class="section" id="module-specsnake.base_spectrum">
 <span id="base-spectrum"></span><h1>base_spectrum<a class="headerlink" href="#module-specsnake.base_spectrum" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="module-specsnake.spectrum_factory">
-<span id="spectrum-factory"></span><h1>spectrum_factory<a class="headerlink" href="#module-specsnake.spectrum_factory" title="Permalink to this headline">¶</a></h1>
 </div>
 <div class="section" id="module-specsnake.builtin_loaders">
 <span id="builtin-loaders"></span><h1>builtin_loaders<a class="headerlink" href="#module-specsnake.builtin_loaders" title="Permalink to this headline">¶</a></h1>
@@ -179,6 +179,108 @@
 <dd><p>A function extracting the measurement data from a SFG spectral file</p>
 </dd></dl>
 
+</div>
+<div class="section" id="module-specsnake.cli">
+<span id="command-line-interface-cli"></span><h1>command line interface (cli)<a class="headerlink" href="#module-specsnake.cli" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="module-specsnake.exceptions">
+<span id="exceptions"></span><h1>exceptions<a class="headerlink" href="#module-specsnake.exceptions" title="Permalink to this headline">¶</a></h1>
+<dl class="py exception">
+<dt id="specsnake.exceptions.CoverageCalculationImpossibleError">
+<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">CoverageCalculationImpossibleError</code><a class="headerlink" href="#specsnake.exceptions.CoverageCalculationImpossibleError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="specsnake.exceptions.IntegrationError">
+<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">IntegrationError</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.exceptions.IntegrationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="specsnake.exceptions.InvalidSpectrumError">
+<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">InvalidSpectrumError</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.exceptions.InvalidSpectrumError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="specsnake.exceptions.SpectrumTypeNotAvailableError">
+<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">SpectrumTypeNotAvailableError</code><a class="headerlink" href="#specsnake.exceptions.SpectrumTypeNotAvailableError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-specsnake.langmuir_isotherm">
+<span id="langmuir-isotherm"></span><h1>langmuir_isotherm<a class="headerlink" href="#module-specsnake.langmuir_isotherm" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="specsnake.langmuir_isotherm.AverageLt">
+<em class="property">class </em><code class="sig-prename descclassname">specsnake.langmuir_isotherm.</code><code class="sig-name descname">AverageLt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.AverageLt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#specsnake.langmuir_isotherm.LtIsotherm" title="specsnake.langmuir_isotherm.LtIsotherm"><code class="xref py py-class docutils literal notranslate"><span class="pre">specsnake.langmuir_isotherm.LtIsotherm</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="specsnake.langmuir_isotherm.LtIsotherm">
+<em class="property">class </em><code class="sig-prename descclassname">specsnake.langmuir_isotherm.</code><code class="sig-name descname">LtIsotherm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">specsnake.base_spectrum.BaseSpectrum</span></code></p>
+<p>A class to represent experimental Langmuir trough isotherms, handling time, area, area per molecule and
+surface pressure</p>
+<dl class="py method">
+<dt id="specsnake.langmuir_isotherm.LtIsotherm.calculate_elasticity">
+<code class="sig-name descname">calculate_elasticity</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.calculate_elasticity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the surface elasticity of the isotherm</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="specsnake.langmuir_isotherm.LtIsotherm.convert_to_export_dataframe">
+<code class="sig-name descname">convert_to_export_dataframe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.convert_to_export_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a Pandas dataframe, suitable for data export to
+origin and similar other programs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="specsnake.langmuir_isotherm.LtIsotherm.create_pointlist">
+<code class="sig-name descname">create_pointlist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_array</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.create_pointlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list containing the index, the x_array (usually area or time) and the surface pressure.
+This is used for example by the GUI functions to find the closest datapoint to a mouse-defined position
+in the plot</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="specsnake.langmuir_isotherm.LtIsotherm.derive_pressure">
+<code class="sig-name descname">derive_pressure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.derive_pressure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the difference quotient of the surface pressure with respect to the area.
+Useful for calculation of surface elasticity</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="specsnake.langmuir_isotherm.LtIsotherm.drop_ascii">
+<code class="sig-name descname">drop_ascii</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.drop_ascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drops an ascii file with semikolon-separated data in the form time;area;surface pressure. Intention
+is easy interfacing with external software like Excel or Origin</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="specsnake.langmuir_isotherm.LtIsotherm.get_maximum_pressure">
+<code class="sig-name descname">get_maximum_pressure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shrinked</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.get_maximum_pressure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum measured surface pressure. Note: This property is uesd for the less-then
+operator implementation of this class!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="specsnake.langmuir_isotherm.LtIsotherm.get_slice">
+<code class="sig-name descname">get_slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_array</span></em>, <em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.get_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a slice of the x_array (usually time or area) defined by the lower and upper integer
+index.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-specsnake.plotting">
+<span id="plotting"></span><h1>plotting<a class="headerlink" href="#module-specsnake.plotting" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="module-specsnake.spectrum_factory">
+<span id="spectrum-factory"></span><h1>spectrum_factory<a class="headerlink" href="#module-specsnake.spectrum_factory" title="Permalink to this headline">¶</a></h1>
 </div>
 <div class="section" id="module-specsnake.sfg_spectrum">
 <span id="sfg-spectrum"></span><h1>sfg_spectrum<a class="headerlink" href="#module-specsnake.sfg_spectrum" title="Permalink to this headline">¶</a></h1>
@@ -321,102 +423,6 @@ the indices of the wavenumber array of the spectrum that are the borders of this
 <dd><p>returns a list containing maximum and minimum wavenumer and the number of data points</p>
 </dd></dl>
 
-</dd></dl>
-
-</div>
-<div class="section" id="module-specsnake.langmuir_isotherm">
-<span id="langmuir-isotherm"></span><h1>langmuir_isotherm<a class="headerlink" href="#module-specsnake.langmuir_isotherm" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="specsnake.langmuir_isotherm.AverageLt">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.langmuir_isotherm.</code><code class="sig-name descname">AverageLt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.AverageLt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#specsnake.langmuir_isotherm.LtIsotherm" title="specsnake.langmuir_isotherm.LtIsotherm"><code class="xref py py-class docutils literal notranslate"><span class="pre">specsnake.langmuir_isotherm.LtIsotherm</span></code></a></p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.langmuir_isotherm.</code><code class="sig-name descname">LtIsotherm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">specsnake.base_spectrum.BaseSpectrum</span></code></p>
-<p>A class to represent experimental Langmuir trough isotherms, handling time, area, area per molecule and
-surface pressure</p>
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.calculate_elasticity">
-<code class="sig-name descname">calculate_elasticity</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.calculate_elasticity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the surface elasticity of the isotherm</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.convert_to_export_dataframe">
-<code class="sig-name descname">convert_to_export_dataframe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.convert_to_export_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function returns a Pandas dataframe, suitable for data export to
-origin and similar other programs</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.create_pointlist">
-<code class="sig-name descname">create_pointlist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_array</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.create_pointlist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list containing the index, the x_array (usually area or time) and the surface pressure.
-This is used for example by the GUI functions to find the closest datapoint to a mouse-defined position
-in the plot</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.derive_pressure">
-<code class="sig-name descname">derive_pressure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.derive_pressure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the difference quotient of the surface pressure with respect to the area.
-Useful for calculation of surface elasticity</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.drop_ascii">
-<code class="sig-name descname">drop_ascii</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.drop_ascii" title="Permalink to this definition">¶</a></dt>
-<dd><p>Drops an ascii file with semikolon-separated data in the form time;area;surface pressure. Intention
-is easy interfacing with external software like Excel or Origin</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.get_maximum_pressure">
-<code class="sig-name descname">get_maximum_pressure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shrinked</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.get_maximum_pressure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the maximum measured surface pressure. Note: This property is uesd for the less-then
-operator implementation of this class!</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.get_slice">
-<code class="sig-name descname">get_slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_array</span></em>, <em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.get_slice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a slice of the x_array (usually time or area) defined by the lower and upper integer
-index.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-specsnake.plotting">
-<span id="plotting"></span><h1>plotting<a class="headerlink" href="#module-specsnake.plotting" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="module-specsnake.exceptions">
-<span id="exceptions"></span><h1>exceptions<a class="headerlink" href="#module-specsnake.exceptions" title="Permalink to this headline">¶</a></h1>
-<dl class="py exception">
-<dt id="specsnake.exceptions.CoverageCalculationImpossibleError">
-<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">CoverageCalculationImpossibleError</code><a class="headerlink" href="#specsnake.exceptions.CoverageCalculationImpossibleError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="specsnake.exceptions.IntegrationError">
-<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">IntegrationError</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.exceptions.IntegrationError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="specsnake.exceptions.InvalidSpectrumError">
-<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">InvalidSpectrumError</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.exceptions.InvalidSpectrumError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="specsnake.exceptions.SpectrumTypeNotAvailableError">
-<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">SpectrumTypeNotAvailableError</code><a class="headerlink" href="#specsnake.exceptions.SpectrumTypeNotAvailableError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
 </div>

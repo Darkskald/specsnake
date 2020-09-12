@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import datetime
 from pathlib import Path
@@ -7,17 +9,24 @@ from .exceptions import SpectrumTypeNotAvailableError
 
 
 class SpectrumFactoryProvider:
+    """A class to generate SpectrumFactories. This is the generic way to introduce new types of spectra to
+    the logic of this package. All builtin type of spectra are available at runtime due to an instance of this class
+    and to add new types, the underlying config dictionary may be updated."""
 
     def __init__(self, config):
+        """Loads the config dictionary containing the construction parameters for spectrum factories."""
         self.config = config
 
-    def provide_factory_by_name(self, name: str):
+    def provide_factory_by_name(self, name: str) -> CustomSpectrumFactory:
         try:
             return CustomSpectrumFactory(**self.config[name])
         except KeyError:
-            raise SpectrumTypeNotAvailableError("The spectrum type you requested is not available!")
+            raise SpectrumTypeNotAvailableError(
+                "The spectrum type you requested is not available in the current config!")
 
     def add_new_template(self, name, extractor, constructor, name_transformer=None):
+        """Add a new template for SpectrumFactories to the configuration. This requires the name of the template,
+        an extractor method, a constructor method and an optional name_transformer method."""
         self.config[name] = {'extractor': extractor, 'constructor': constructor, 'name_transformer': name_transformer}
 
 
@@ -49,9 +58,9 @@ class CustomSpectrumFactory:
         return [self.build_from_file(p) for p in directory.rglob(file_ending)]
 
 
+# Instantiate one global factory provider based on the builtin config
 global_factory_config = {
     "sfg": {"extractor": sfg_extractor, "constructor": sfg_constructor},
     "lt": {"extractor": lt_extractor, "constructor": lt_constructor}
 }
 global_provider = SpectrumFactoryProvider(global_factory_config)
-

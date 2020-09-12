@@ -3,17 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to specsnake's documentation!
+Specsnake
 =====================================
+
+.. include:: ../../README.md
 
 base_spectrum
 ==============
 .. automodule:: specsnake.base_spectrum
-   :members:
-
-spectrum_factory
-================
-.. automodule:: specsnake.spectrum_factory
    :members:
 
 builtin_loaders
@@ -21,10 +18,16 @@ builtin_loaders
 .. automodule:: specsnake.builtin_loaders
    :members:
 
-sfg_spectrum
-================
-.. automodule:: specsnake.sfg_spectrum
+command line interface (cli)
+============================
+.. automodule:: specsnake.cli
    :members:
+
+exceptions
+==========
+.. automodule:: specsnake.exceptions
+   :members:
+   :show-inheritance:
 
 langmuir_isotherm
 =================
@@ -38,11 +41,15 @@ plotting
    :members:
    :show-inheritance:
 
-exceptions
-==========
-.. automodule:: specsnake.exceptions
+spectrum_factory
+================
+.. automodule:: specsnake.spectrum_factory
    :members:
-   :show-inheritance:
+
+sfg_spectrum
+================
+.. automodule:: specsnake.sfg_spectrum
+   :members:
 
 Indices and tables
 ==================

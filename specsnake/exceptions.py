@@ -14,3 +14,7 @@ class CoverageCalculationImpossibleError(Exception):
 
 class SpectrumTypeNotAvailableError(Exception):
     pass
+
+
+class NoTimestampOfMeasurementSetError(Exception):
+    pass
