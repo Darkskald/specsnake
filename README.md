@@ -7,7 +7,7 @@ Installation
 ============
 **specsnake** can be installed directly via *pip* from its GitHub repository by running the following command:
 
-``pip install git+https://github.com/Darkskald/SFG.git``
+``pip install git+https://github.com/Darkskald/specsnake.git``
 
 Basic usage
 ===========

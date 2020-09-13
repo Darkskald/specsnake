@@ -13,10 +13,10 @@ class ExtractorFactory:
     separators etc., this class has the purpose to create custom extractor functions quickly. Basically, this
     is a convenience wrapper around pandas' read_csv method call."""
 
-    def __init__(self, sep='\t', columns=None, column_names=None, encoding=None, engine='c', comment=None):
+    def __init__(self, sep='\t', columns=None, column_names=None, encoding=None, engine='c', comment=None, skip=None):
         """Set the parameters to fit the shape of the input data to load."""
         self.config = {'sep': sep, 'usecols': columns, 'names': column_names, 'encoding': encoding,
-                       'engine': engine, 'comment': comment}
+                       'engine': engine, 'comment': comment, 'skiprows': skip}
 
     def build(self) -> Callable[[str], pd.DataFrame]:
         """Removes all None values from the configuration, passes it as argument to partial and returns a modified
