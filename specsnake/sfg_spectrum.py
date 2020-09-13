@@ -318,11 +318,10 @@ class SfgAverager:
             if debug:
                 if self.integral < 0:
                     self.benchmark()
-                    print("Warning: negative integral value in SfgAverager!")
+                    logger.warning("Warning: negative integral value in SfgAverager!")
                     self.integral = 0
                     self.coverage = 0
 
-    # todo: mit Gernot abklären ob von allen Baseline oder nur vom average
     def average_spectra(self, baseline=True):
         """Function performing the averaging: it ensures that all spectra are interpolated to have the same shape,
         then they are averaged. A AverageSpectrum  object is constructed and returned."""
@@ -365,9 +364,6 @@ class SfgAverager:
             newname = self.name
         in_new = [n.name for n in self.spectra]
         s_meta = {"name": newname, "made_from": in_new, "std": std}
-
-        # with open("blabla.txt", "a") as outfile:
-        # outfile.write(f'name: {newname} x: {root_x_scale}, y: {average}\n')
 
         s = AverageSpectrum(root_x_scale, average, s_meta)
 
@@ -424,7 +420,6 @@ class SfgAverager:
             raise CoverageCalculationImpossibleError(
                 f'Coverage not available for reference samples, integral is {self.integral}!')
 
-    @DeprecationWarning
     def benchmark(self):
         self.create_log()
         l = [i for i in self.spectra]

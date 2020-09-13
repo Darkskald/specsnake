@@ -7,7 +7,7 @@ from scipy.integrate import simps as sp
 from scipy.integrate import trapz as tp
 from typing import Dict, Any, Tuple
 
-from .exceptions import InvalidSpectrumError, IntegrationError, NoTimestampOfMeasurementSetError
+from .exceptions import InvalidSpectrumError, SpectrumIntegrationError, NoTimestampOfMeasurementSetError
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ class BaseSpectrum(metaclass=MetaSpectrum):
                 area = tp(y_array, x_array)
             return area
         except:
-            raise IntegrationError(f'Integration not possible for {self.name}')
+            raise SpectrumIntegrationError(f'Integration not possible for {self.name}')
 
     # export functions
     def properties_to_dict(self) -> Dict[str, Any]:

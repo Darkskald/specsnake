@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
+from typing import Tuple
 
-from .base_spectrum import BaseSpectrum
+from specsnake.base_spectrum import BaseSpectrum
+from specsnake.exceptions import MaximumPressureCalculationError
 
 
 class LtIsotherm(BaseSpectrum):
@@ -16,16 +18,12 @@ class LtIsotherm(BaseSpectrum):
         self.apm = apm
         self.pressure = pressure
         self.compression_factor = self.calc_compression_factor()
-
-        # todo: remove this hack which ensures the spectrum complies with the metaclass
         self.x = None
         self.y = None
         self.x_unit = "area/ cm$^{2}$"
         self.y_unit = "surface pressure/ mNm$^{-1}$"
-
         self.speed = None
         self.measurement_number = None
-
         self.lift_off = lift_off
 
         if correct is True:
@@ -35,13 +33,9 @@ class LtIsotherm(BaseSpectrum):
 
         self.setup_spec()
 
-    def __lt__(self, other):
-        if self.get_maximum_pressure() < other.get_maximum_pressure():
-            return True
-
     def setup_spec(self) -> None:
-        self._x = self.area
-        self._y = self.pressure
+        self.x = self.area
+        self.y = self.pressure
 
     def drop_ascii(self) -> None:
         """Drops an ascii file with semikolon-separated data in the form time;area;surface pressure. Intention
@@ -51,7 +45,7 @@ class LtIsotherm(BaseSpectrum):
             for a, b, c in zip(self.time, self.area, self.pressure):
                 outfile.write(str(a) + ";" + str(b) + ";" + str(c) + "\n")
 
-    def convert_to_export_dataframe(self):
+    def convert_to_export_dataframe(self) -> pd.DataFrame:
         """This function returns a Pandas dataframe, suitable for data export to
         origin and similar other programs"""
         data = {
@@ -62,21 +56,22 @@ class LtIsotherm(BaseSpectrum):
         }
         return pd.DataFrame(data=data)
 
-    def get_maximum_pressure(self, shrinked=None):
-        """Returns the maximum measured surface pressure. Note: This property is uesd for the less-then
-        operator implementation of this class!"""
-        if shrinked == None:
+    def get_maximum_pressure(self, y_array=None) -> np.ndarray:
+        """Returns the maximum measured surface pressure.
+
+        :param y_array: an array to get the maximum of
+        """
+        if y_array is None:
             return np.max(self.pressure)
         else:
             try:
-                return np.max(shrinked)
+                return np.max(y_array)
             except:
-                # todo specify the type of error numpy will throw
-                raise TypeError("Can not calc maximum for this operand")
+                raise MaximumPressureCalculationError("Can not calc maximum for this operand")
 
-    def calc_compression_factor(self):
-        max = np.max(self.area)
-        return self.area / max
+    def calc_compression_factor(self) -> np.ndarray:
+        """Calculate the compression factor array which is the area divided by the maximum area."""
+        return self.area / np.max(self.area)
 
     def derive_pressure(self):
         """Calculates the difference quotient of the surface pressure with respect to the area.
@@ -121,13 +116,13 @@ class LtIsotherm(BaseSpectrum):
 
         return np.array(out[::-1])
 
-    def cut_away_decay(self, x_array):
+    def cut_away_decay(self, x_array) -> Tuple[np.ndarray, np.ndarray]:
         max_area = np.argmax(self.area < 31.2)
         return self.get_slice(x_array, 0, max_area)
 
     # todo: replace with numpy argmax function
     @staticmethod
-    def get_closest_index(array_datapoints, check) -> int:
+    def get_closest_index(array_datapoints: np.ndarray, check:float) -> int:
         d = 1000000000000
         index = None
         for point in array_datapoints:
