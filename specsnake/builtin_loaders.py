@@ -1,7 +1,28 @@
-import pandas as pd
+from functools import partial
 
-from .langmuir_isotherm import LtIsotherm
-from .sfg_spectrum import SfgSpectrum
+import pandas as pd
+from typing import Callable
+
+from specsnake.langmuir_isotherm import LtIsotherm
+from specsnake.plotting import Plotter
+from specsnake.sfg_spectrum import SfgSpectrum
+
+
+class ExtractorFactory:
+    """As in most cases spectral data appears in the shape of csv-like files with a varying amount of columns,
+    separators etc., this class has the purpose to create custom extractor functions quickly. Basically, this
+    is a convenience wrapper around pandas' read_csv method call."""
+
+    def __init__(self, sep='\t', columns=None, column_names=None, encoding=None, engine='c', comment=None):
+        """Set the parameters to fit the shape of the input data to load."""
+        self.config = {'sep': sep, 'usecols': columns, 'names': column_names, 'encoding': encoding,
+                       'engine': engine, 'comment': comment}
+
+    def build_extractor(self) -> Callable[[str], pd.DataFrame]:
+        """Removes all None values from the configuration, passes it as argument to partial and returns a modified
+        verion of pandas' read_csv method. The returned function should only take the file name as argument."""
+        final_config = {key: value for key, value in self.config.items() if value is not None}
+        return partial(pd.read_csv, **final_config)
 
 
 # SFG
@@ -25,4 +46,3 @@ def lt_extractor(file) -> pd.DataFrame:
 
 def lt_constructor(name, data, creation_time) -> LtIsotherm:
     return LtIsotherm(name, creation_time, data["time"], data["area"], data["apm"], data["surface_pressure"])
-

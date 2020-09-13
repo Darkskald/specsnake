@@ -316,7 +316,10 @@ class SfgAverager:
 
             self.average_spectrum = self.average_spectra(baseline=baseline)
             self.integral = self.average_spectrum.calculate_ch_integral()
-            self.coverage = self.calc_coverage()
+            try:
+                self.coverage = self.calc_coverage()
+            except CoverageCalculationImpossibleError:
+                self.coverage = None
 
             if debug:
                 if self.integral < 0:
@@ -481,7 +484,6 @@ class AverageSpectrum(SfgSpectrum):
         super().set_regions()
 
 
-@DeprecationWarning
 class DummyPlotter:
     """A test class to monitor the interaction of the subclasses of AbstractSpectrum with plotting routines."""
 
