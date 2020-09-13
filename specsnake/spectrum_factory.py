@@ -13,13 +13,14 @@ class SpectrumFactoryProvider:
     the logic of this package. All builtin type of spectra are available at runtime due to an instance of this class
     and to add new types, the underlying config dictionary may be updated."""
 
-    def __init__(self, config):
-        """Loads the config dictionary containing the construction parameters for spectrum factories."""
-        self.config = config
+    global_factory_config = {
+        "sfg": {"extractor": sfg_extractor, "constructor": sfg_constructor},
+        "lt": {"extractor": lt_extractor, "constructor": lt_constructor}
+    }
 
     def provide_factory_by_name(self, name: str) -> CustomSpectrumFactory:
         try:
-            return CustomSpectrumFactory(**self.config[name])
+            return CustomSpectrumFactory(**self.global_factory_config[name])
         except KeyError:
             raise SpectrumTypeNotAvailableError(
                 "The spectrum type you requested is not available in the current config!")
@@ -27,7 +28,7 @@ class SpectrumFactoryProvider:
     def add_new_template(self, name, extractor, constructor, name_transformer=None):
         """Add a new template for SpectrumFactories to the configuration. This requires the name of the template,
         an extractor method, a constructor method and an optional name_transformer method."""
-        self.config[name] = {'extractor': extractor, 'constructor': constructor, 'name_transformer': name_transformer}
+        self.global_factory_config[name] = {'extractor': extractor, 'constructor': constructor, 'name_transformer': name_transformer}
 
 
 class CustomSpectrumFactory:
@@ -38,7 +39,7 @@ class CustomSpectrumFactory:
         optional name transformer processes the file name to a representation suitable to appear in a plot legend."""
         self.extractor = extractor
         self.constructor = constructor
-        self.name_transformer = None
+        self.name_transformer = name_transformer
 
     def build_from_file(self, file: Path):
         """The function that transforms the filepath to the spectrum object"""
@@ -56,11 +57,3 @@ class CustomSpectrumFactory:
         """A convenience function to apply the builder to all spectra within the directoy and return a list of spectra.
         Can receive a pattern for the file ending to avoid the wrong files being imported."""
         return [self.build_from_file(p) for p in directory.rglob(file_ending)]
-
-
-# Instantiate one global factory provider based on the builtin config
-global_factory_config = {
-    "sfg": {"extractor": sfg_extractor, "constructor": sfg_constructor},
-    "lt": {"extractor": lt_extractor, "constructor": lt_constructor}
-}
-global_provider = SpectrumFactoryProvider(global_factory_config)

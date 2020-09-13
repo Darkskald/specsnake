@@ -12,4 +12,4 @@ Installation
 Basic usage
 ===========
 **specsnake** may be imported to be used in other python code but it also offer a command line interface for stand-alone
-execution which is currently under development. 
+execution which is currently under development.

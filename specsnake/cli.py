@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from .plotting import Plotter
-from .spectrum_factory import global_provider
+from .spectrum_factory import SpectrumFactoryProvider
 
 
 @click.group()
@@ -28,7 +28,7 @@ def plot(filename, save):
 @click.option('--save/--no-save',  ' -s/-i', default=False)
 def plotall(stype, save):
     # todo: custom error if desired spec not available and init fails
-    factory = global_provider.provide_factory_by_name(stype)
+    factory = SpectrumFactoryProvider().provide_factory_by_name(stype)
     path = Path(os.getcwd())
     specs = factory.build_batch(path)
     p = Plotter(specs)

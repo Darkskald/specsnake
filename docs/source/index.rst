@@ -5,6 +5,11 @@
 
 .. include:: ../../README.md
 
+The following sections contains the detailed documentation of all modules, classes and function
+of this package.
+
+.. include:: framework_example.rst
+
 base_spectrum
 ==============
 .. automodule:: specsnake.base_spectrum

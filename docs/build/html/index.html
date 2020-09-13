@@ -173,6 +173,54 @@ appear in analytical methods used in chemistry and physics.</p>
 <h1>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
 <p><strong>specsnake</strong> may be imported to be used in other python code but it also offer a command line interface for stand-alone
 execution which is currently under development.</p>
+<p>The following sections contains the detailed documentation of all modules, classes and function
+of this package.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">specsnake.plotting</span> <span class="kn">import</span> <span class="n">Plotter</span>
+<span class="kn">from</span> <span class="nn">specsnake.builtin_loaders</span> <span class="kn">import</span> <span class="n">ExtractorFactory</span><span class="p">,</span> <span class="n">provide_spectrum_constructor</span>
+<span class="kn">from</span> <span class="nn">specsnake.spectrum_factory</span> <span class="kn">import</span> <span class="n">CustomSpectrumFactory</span><span class="p">,</span> <span class="n">SpectrumFactoryProvider</span>
+
+<span class="c1"># Starting point: A directory filled with spectra of one type (Langmuir compression isotherms)</span>
+<span class="c1"># This must be a Path (from the pathlib library)</span>
+<span class="n">base_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;/home/flo/PycharmProjects/specsnake/tests/data/test_lt&#39;</span><span class="p">)</span>
+
+<span class="c1"># To register a new type of spectra to the framework, we need an extractor to load the data from</span>
+<span class="c1"># the file, a constructor to instantiate the spectrum object and (optionally) a name transformer</span>
+<span class="c1"># to</span>
+
+<span class="c1"># From the file we need two columns at the indices 2 and 4 with the names area surface pressure.</span>
+<span class="c1"># The file contains comments starting with &#39;#&#39; so we generate a suitable extractor.</span>
+<span class="n">col_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;apm&quot;</span><span class="p">,</span> <span class="s2">&quot;surface_pressure&quot;</span><span class="p">]</span>
+<span class="n">extractor</span> <span class="o">=</span> <span class="n">ExtractorFactory</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">column_names</span><span class="o">=</span><span class="n">col_names</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+<span class="c1"># The constructor is required to convert the data to an actual spectrum object. Using the generic BaseSpectrum</span>
+<span class="c1"># class, this is straightforward and requires only passing of the desired names for x and y unit strings.</span>
+<span class="c1"># The constructor must take the configuration for the units to label the plot axis and the name of the columns</span>
+<span class="c1"># to use as x and y values, they are passed as a config dictionary</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x_unit&#39;</span><span class="p">:</span> <span class="s1">&#39;area/ cm$^2$&#39;</span><span class="p">,</span> <span class="s1">&#39;y_unit&#39;</span><span class="p">:</span> <span class="s1">&#39;surface pressure/ mNm$^{-1}$&#39;</span><span class="p">}</span>
+<span class="n">constructor</span> <span class="o">=</span> <span class="n">provide_spectrum_constructor</span><span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;surface_pressure&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span>
+
+<span class="c1"># we want to transform the name such that &#39;LT_0605_r1_p_2_0.7_#1.dat&#39; -&gt; &#39;0605 r1 p 2 0.7 #1&#39;</span>
+<span class="n">name_transformer</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span>
+
+<span class="c1"># now we can call create the CustomSpectrumFactory that is capable of converting all files to spectra</span>
+<span class="n">factory</span> <span class="o">=</span> <span class="n">CustomSpectrumFactory</span><span class="p">(</span><span class="n">extractor</span><span class="p">,</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">name_transformer</span><span class="p">)</span>
+<span class="n">spectra</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">build_batch</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">base_dir</span><span class="p">))</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">(</span><span class="n">spectra</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># if kind of spectrum you want to plot</span>
+</pre></div>
+</div>
+<img alt="_images/demo_lt.png" src="_images/demo_lt.png" />
+<p>This procedure is much simpler if the desired type of spectrum is built in to the package.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">factory</span> <span class="o">=</span> <span class="n">SpectrumFactoryProvider</span><span class="p">()</span><span class="o">.</span><span class="n">provide_factory_by_name</span><span class="p">(</span><span class="s1">&#39;lt&#39;</span><span class="p">)</span>
+<span class="n">spectra</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">build_batch</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">base_dir</span><span class="p">))</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">(</span><span class="n">spectra</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This code generates the same plot like the example above.</p>
 </div>
 <div class="section" id="module-specsnake.base_spectrum">
 <span id="base-spectrum"></span><h1>base_spectrum<a class="headerlink" href="#module-specsnake.base_spectrum" title="Permalink to this headline">¶</a></h1>
@@ -227,6 +275,21 @@ external factor</p>
 </div>
 <div class="section" id="module-specsnake.builtin_loaders">
 <span id="builtin-loaders"></span><h1>builtin_loaders<a class="headerlink" href="#module-specsnake.builtin_loaders" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="specsnake.builtin_loaders.ExtractorFactory">
+<em class="property">class </em><code class="sig-prename descclassname">specsnake.builtin_loaders.</code><code class="sig-name descname">ExtractorFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">'\t'</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">column_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">engine</span><span class="o">=</span><span class="default_value">'c'</span></em>, <em class="sig-param"><span class="n">comment</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.builtin_loaders.ExtractorFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>As in most cases spectral data appears in the shape of csv-like files with a varying amount of columns,
+separators etc., this class has the purpose to create custom extractor functions quickly. Basically, this
+is a convenience wrapper around pandas’ read_csv method call.</p>
+<dl class="py method">
+<dt id="specsnake.builtin_loaders.ExtractorFactory.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span>str<span class="p">]</span><span class="p">, </span>pandas.core.frame.DataFrame<span class="p">]</span><a class="headerlink" href="#specsnake.builtin_loaders.ExtractorFactory.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all None values from the configuration, passes it as argument to partial and returns a modified
+verion of pandas’ read_csv method. The returned function should only take the file name as argument.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt id="specsnake.builtin_loaders.sfg_constructor">
 <code class="sig-prename descclassname">specsnake.builtin_loaders.</code><code class="sig-name descname">sfg_constructor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">creation_time</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#specsnake.sfg_spectrum.SfgSpectrum" title="specsnake.sfg_spectrum.SfgSpectrum">specsnake.sfg_spectrum.SfgSpectrum</a><a class="headerlink" href="#specsnake.builtin_loaders.sfg_constructor" title="Permalink to this definition">¶</a></dt>
@@ -349,7 +412,7 @@ index.</p>
 <span id="spectrum-factory"></span><h1>spectrum_factory<a class="headerlink" href="#module-specsnake.spectrum_factory" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="specsnake.spectrum_factory.SpectrumFactoryProvider">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.spectrum_factory.</code><code class="sig-name descname">SpectrumFactoryProvider</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.spectrum_factory.SpectrumFactoryProvider" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">specsnake.spectrum_factory.</code><code class="sig-name descname">SpectrumFactoryProvider</code><a class="headerlink" href="#specsnake.spectrum_factory.SpectrumFactoryProvider" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class to generate SpectrumFactories. This is the generic way to introduce new types of spectra to
 the logic of this package. All builtin type of spectra are available at runtime due to an instance of this class
 and to add new types, the underlying config dictionary may be updated.</p>

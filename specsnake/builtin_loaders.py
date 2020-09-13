@@ -3,8 +3,8 @@ from functools import partial
 import pandas as pd
 from typing import Callable
 
+from specsnake.base_spectrum import BaseSpectrum
 from specsnake.langmuir_isotherm import LtIsotherm
-from specsnake.plotting import Plotter
 from specsnake.sfg_spectrum import SfgSpectrum
 
 
@@ -18,11 +18,23 @@ class ExtractorFactory:
         self.config = {'sep': sep, 'usecols': columns, 'names': column_names, 'encoding': encoding,
                        'engine': engine, 'comment': comment}
 
-    def build_extractor(self) -> Callable[[str], pd.DataFrame]:
+    def build(self) -> Callable[[str], pd.DataFrame]:
         """Removes all None values from the configuration, passes it as argument to partial and returns a modified
         verion of pandas' read_csv method. The returned function should only take the file name as argument."""
         final_config = {key: value for key, value in self.config.items() if value is not None}
         return partial(pd.read_csv, **final_config)
+
+
+def provide_spectrum_constructor(x, y, **kwargs):
+    def spectrum_constructor(name, data, creation_time):
+        attributes = kwargs
+        attributes['x'] = data[x].to_numpy()
+        attributes['y'] = data[y].to_numpy()
+        attributes['timestamp'] = creation_time
+        print(attributes)
+        return BaseSpectrum(name=name, **attributes)
+
+    return spectrum_constructor
 
 
 # SFG
