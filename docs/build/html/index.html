@@ -35,7 +35,8 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="specsnake package" href="specsnake.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -80,22 +81,10 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">specsnake</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#basic-usage">Basic usage</a></li>
-<li><a class="reference internal" href="#module-specsnake.base_spectrum">base_spectrum</a></li>
-<li><a class="reference internal" href="#module-specsnake.builtin_loaders">builtin_loaders</a></li>
-<li><a class="reference internal" href="#module-specsnake.cli">command line interface (cli)</a></li>
-<li><a class="reference internal" href="#module-specsnake.exceptions">exceptions</a></li>
-<li><a class="reference internal" href="#module-specsnake.langmuir_isotherm">langmuir_isotherm</a></li>
-<li><a class="reference internal" href="#module-specsnake.plotting">plotting</a></li>
-<li><a class="reference internal" href="#module-specsnake.spectrum_factory">spectrum_factory</a></li>
-<li><a class="reference internal" href="#module-specsnake.sfg_spectrum">sfg_spectrum</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="specsnake.html">specsnake package</a></li>
 </ul>
-</div>
+
             
           
         </div>
@@ -173,8 +162,6 @@ appear in analytical methods used in chemistry and physics.</p>
 <h1>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
 <p><strong>specsnake</strong> may be imported to be used in other python code but it also offer a command line interface for stand-alone
 execution which is currently under development.</p>
-<p>The following sections contains the detailed documentation of all modules, classes and function
-of this package.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">specsnake.plotting</span> <span class="kn">import</span> <span class="n">Plotter</span>
 <span class="kn">from</span> <span class="nn">specsnake.builtin_loaders</span> <span class="kn">import</span> <span class="n">ExtractorFactory</span><span class="p">,</span> <span class="n">provide_spectrum_constructor</span>
@@ -186,7 +173,7 @@ of this package.</p>
 
 <span class="c1"># To register a new type of spectra to the framework, we need an extractor to load the data from</span>
 <span class="c1"># the file, a constructor to instantiate the spectrum object and (optionally) a name transformer</span>
-<span class="c1"># to</span>
+<span class="c1"># to convert the file name to a string suitable to appear in a plot legend.</span>
 
 <span class="c1"># From the file we need two columns at the indices 2 and 4 with the names area surface pressure.</span>
 <span class="c1"># The file contains comments starting with &#39;#&#39; so we generate a suitable extractor.</span>
@@ -221,360 +208,28 @@ of this package.</p>
 </pre></div>
 </div>
 <p>This code generates the same plot like the example above.</p>
+<p>The following sections contains the detailed documentation of all modules, classes and function
+of this package.</p>
 </div>
-<div class="section" id="module-specsnake.base_spectrum">
-<span id="base-spectrum"></span><h1>base_spectrum<a class="headerlink" href="#module-specsnake.base_spectrum" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="specsnake.base_spectrum.BaseSpectrum">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.base_spectrum.</code><code class="sig-name descname">BaseSpectrum</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.base_spectrum.BaseSpectrum" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class represents a basic spectrum, having an independent array of x and a dependent array of values typically
-representing experimental data resulting from instrumental measurements. It can be used as a generic template
-for many different concrete data of this structure.</p>
-<dl class="py method">
-<dt id="specsnake.base_spectrum.BaseSpectrum.get_xrange">
-<code class="sig-name descname">get_xrange</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#specsnake.base_spectrum.BaseSpectrum.get_xrange" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the slice of the x values in the borders of lower to upper</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.base_spectrum.BaseSpectrum.get_xrange_indices">
-<code class="sig-name descname">get_xrange_indices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span><a class="headerlink" href="#specsnake.base_spectrum.BaseSpectrum.get_xrange_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes a high (upper) and a low (lower) target x value as argument. Returns
-the indices of the wavenumber array of the spectrum that are the borders of this interval.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.base_spectrum.BaseSpectrum.integrate_slice">
-<code class="sig-name descname">integrate_slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_array</span><span class="p">:</span> <span class="n">numpy.array</span></em>, <em class="sig-param"><span class="n">y_array</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#specsnake.base_spectrum.BaseSpectrum.integrate_slice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Integrates the y_array which has a spacing given by the x_array. First it tries to apply
-simpson rule integration rule, but if this fails the function invokes integration via
-trapeziodal rule</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.base_spectrum.BaseSpectrum.normalize">
-<code class="sig-name descname">normalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">external</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#specsnake.base_spectrum.BaseSpectrum.normalize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Normalize the spectrum’s y data either to the maximum of the y values or an
-external factor</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.base_spectrum.BaseSpectrum.yield_spectral_range">
-<code class="sig-name descname">yield_spectral_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#specsnake.base_spectrum.BaseSpectrum.yield_spectral_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns a list containing maximum and minimum wavenumer and the number of data points</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="specsnake.base_spectrum.MetaSpectrum">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.base_spectrum.</code><code class="sig-name descname">MetaSpectrum</code><a class="headerlink" href="#specsnake.base_spectrum.MetaSpectrum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Metaclass responsible for the correct runtime behaviour of spectrum objects derived from it.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-specsnake.builtin_loaders">
-<span id="builtin-loaders"></span><h1>builtin_loaders<a class="headerlink" href="#module-specsnake.builtin_loaders" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="specsnake.builtin_loaders.ExtractorFactory">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.builtin_loaders.</code><code class="sig-name descname">ExtractorFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">'\t'</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">column_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">engine</span><span class="o">=</span><span class="default_value">'c'</span></em>, <em class="sig-param"><span class="n">comment</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.builtin_loaders.ExtractorFactory" title="Permalink to this definition">¶</a></dt>
-<dd><p>As in most cases spectral data appears in the shape of csv-like files with a varying amount of columns,
-separators etc., this class has the purpose to create custom extractor functions quickly. Basically, this
-is a convenience wrapper around pandas’ read_csv method call.</p>
-<dl class="py method">
-<dt id="specsnake.builtin_loaders.ExtractorFactory.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span>str<span class="p">]</span><span class="p">, </span>pandas.core.frame.DataFrame<span class="p">]</span><a class="headerlink" href="#specsnake.builtin_loaders.ExtractorFactory.build" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes all None values from the configuration, passes it as argument to partial and returns a modified
-verion of pandas’ read_csv method. The returned function should only take the file name as argument.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="specsnake.builtin_loaders.sfg_constructor">
-<code class="sig-prename descclassname">specsnake.builtin_loaders.</code><code class="sig-name descname">sfg_constructor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">creation_time</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#specsnake.sfg_spectrum.SfgSpectrum" title="specsnake.sfg_spectrum.SfgSpectrum">specsnake.sfg_spectrum.SfgSpectrum</a><a class="headerlink" href="#specsnake.builtin_loaders.sfg_constructor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor function for the actual SFG object</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="specsnake.builtin_loaders.sfg_extractor">
-<code class="sig-prename descclassname">specsnake.builtin_loaders.</code><code class="sig-name descname">sfg_extractor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#specsnake.builtin_loaders.sfg_extractor" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function extracting the measurement data from a SFG spectral file</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-specsnake.cli">
-<span id="command-line-interface-cli"></span><h1>command line interface (cli)<a class="headerlink" href="#module-specsnake.cli" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="module-specsnake.exceptions">
-<span id="exceptions"></span><h1>exceptions<a class="headerlink" href="#module-specsnake.exceptions" title="Permalink to this headline">¶</a></h1>
-<dl class="py exception">
-<dt id="specsnake.exceptions.CoverageCalculationImpossibleError">
-<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">CoverageCalculationImpossibleError</code><a class="headerlink" href="#specsnake.exceptions.CoverageCalculationImpossibleError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="specsnake.exceptions.IntegrationError">
-<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">IntegrationError</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.exceptions.IntegrationError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="specsnake.exceptions.InvalidSpectrumError">
-<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">InvalidSpectrumError</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.exceptions.InvalidSpectrumError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="specsnake.exceptions.NoTimestampOfMeasurementSetError">
-<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">NoTimestampOfMeasurementSetError</code><a class="headerlink" href="#specsnake.exceptions.NoTimestampOfMeasurementSetError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="specsnake.exceptions.SpectrumTypeNotAvailableError">
-<em class="property">exception </em><code class="sig-prename descclassname">specsnake.exceptions.</code><code class="sig-name descname">SpectrumTypeNotAvailableError</code><a class="headerlink" href="#specsnake.exceptions.SpectrumTypeNotAvailableError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-specsnake.langmuir_isotherm">
-<span id="langmuir-isotherm"></span><h1>langmuir_isotherm<a class="headerlink" href="#module-specsnake.langmuir_isotherm" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="specsnake.langmuir_isotherm.AverageLt">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.langmuir_isotherm.</code><code class="sig-name descname">AverageLt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.AverageLt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#specsnake.langmuir_isotherm.LtIsotherm" title="specsnake.langmuir_isotherm.LtIsotherm"><code class="xref py py-class docutils literal notranslate"><span class="pre">specsnake.langmuir_isotherm.LtIsotherm</span></code></a></p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.langmuir_isotherm.</code><code class="sig-name descname">LtIsotherm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#specsnake.base_spectrum.BaseSpectrum" title="specsnake.base_spectrum.BaseSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">specsnake.base_spectrum.BaseSpectrum</span></code></a></p>
-<p>A class to represent experimental Langmuir trough isotherms, handling time, area, area per molecule and
-surface pressure</p>
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.calculate_elasticity">
-<code class="sig-name descname">calculate_elasticity</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.calculate_elasticity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the surface elasticity of the isotherm</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.convert_to_export_dataframe">
-<code class="sig-name descname">convert_to_export_dataframe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.convert_to_export_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function returns a Pandas dataframe, suitable for data export to
-origin and similar other programs</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.create_pointlist">
-<code class="sig-name descname">create_pointlist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_array</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.create_pointlist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list containing the index, the x_array (usually area or time) and the surface pressure.
-This is used for example by the GUI functions to find the closest datapoint to a mouse-defined position
-in the plot</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.derive_pressure">
-<code class="sig-name descname">derive_pressure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.derive_pressure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the difference quotient of the surface pressure with respect to the area.
-Useful for calculation of surface elasticity</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.drop_ascii">
-<code class="sig-name descname">drop_ascii</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.drop_ascii" title="Permalink to this definition">¶</a></dt>
-<dd><p>Drops an ascii file with semikolon-separated data in the form time;area;surface pressure. Intention
-is easy interfacing with external software like Excel or Origin</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.get_maximum_pressure">
-<code class="sig-name descname">get_maximum_pressure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shrinked</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.get_maximum_pressure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the maximum measured surface pressure. Note: This property is uesd for the less-then
-operator implementation of this class!</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.langmuir_isotherm.LtIsotherm.get_slice">
-<code class="sig-name descname">get_slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_array</span></em>, <em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.langmuir_isotherm.LtIsotherm.get_slice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a slice of the x_array (usually time or area) defined by the lower and upper integer
-index.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-specsnake.plotting">
-<span id="plotting"></span><h1>plotting<a class="headerlink" href="#module-specsnake.plotting" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="module-specsnake.spectrum_factory">
-<span id="spectrum-factory"></span><h1>spectrum_factory<a class="headerlink" href="#module-specsnake.spectrum_factory" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="specsnake.spectrum_factory.SpectrumFactoryProvider">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.spectrum_factory.</code><code class="sig-name descname">SpectrumFactoryProvider</code><a class="headerlink" href="#specsnake.spectrum_factory.SpectrumFactoryProvider" title="Permalink to this definition">¶</a></dt>
-<dd><p>A class to generate SpectrumFactories. This is the generic way to introduce new types of spectra to
-the logic of this package. All builtin type of spectra are available at runtime due to an instance of this class
-and to add new types, the underlying config dictionary may be updated.</p>
-<dl class="py method">
-<dt id="specsnake.spectrum_factory.SpectrumFactoryProvider.add_new_template">
-<code class="sig-name descname">add_new_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">extractor</span></em>, <em class="sig-param"><span class="n">constructor</span></em>, <em class="sig-param"><span class="n">name_transformer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.spectrum_factory.SpectrumFactoryProvider.add_new_template" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new template for SpectrumFactories to the configuration. This requires the name of the template,
-an extractor method, a constructor method and an optional name_transformer method.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-specsnake.sfg_spectrum">
-<span id="sfg-spectrum"></span><h1>sfg_spectrum<a class="headerlink" href="#module-specsnake.sfg_spectrum" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="specsnake.sfg_spectrum.AverageSpectrum">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.sfg_spectrum.</code><code class="sig-name descname">AverageSpectrum</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.AverageSpectrum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt id="specsnake.sfg_spectrum.DummyPlotter">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.sfg_spectrum.</code><code class="sig-name descname">DummyPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">speclist</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">savedir</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">savename</span><span class="o">=</span><span class="default_value">'Default'</span></em>, <em class="sig-param"><span class="n">special</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.DummyPlotter" title="Permalink to this definition">¶</a></dt>
-<dd><p>A test class to monitor the interaction of the subclasses of AbstractSpectrum with plotting routines.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="specsnake.sfg_spectrum.SfgAverager">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.sfg_spectrum.</code><code class="sig-name descname">SfgAverager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spectra</span><span class="p">:</span> <span class="n">List<span class="p">[</span><a class="reference internal" href="#specsnake.sfg_spectrum.SfgSpectrum" title="specsnake.sfg_spectrum.SfgSpectrum">specsnake.sfg_spectrum.SfgSpectrum</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">references</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">enforce_scale</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">baseline</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.SfgAverager" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class takes a list of SFG spectra and generates an average spectrum of them by interpolation and
-averaging. It is possible to pass a dictionary of date:dppc_integral key-value-pairs in order to calculate
-the coverage.</p>
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgAverager.average_spectra">
-<code class="sig-name descname">average_spectra</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">baseline</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.SfgAverager.average_spectra" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function performing the averaging: it ensures that all spectra are interpolated to have the same shape,
-then they are averaged. A AverageSpectrum  object is constructed and returned.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgAverager.calc_coverage">
-<code class="sig-name descname">calc_coverage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.SfgAverager.calc_coverage" title="Permalink to this definition">¶</a></dt>
-<dd><p>A convenience function  to calculate the surface coverage</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgAverager.calc_reference_part">
-<code class="sig-name descname">calc_reference_part</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.SfgAverager.calc_reference_part" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the participation of each DPPC references. This is important if the spectra to average are
-measured on different sampling days. If, for example,  5 samples are to average and 3 of them are measured
-on one day, 2 on another, the final coverage is calculated by dividing the AveragedSpectrum integral by the
-weighted sum of the DPPC integrals of the corresponding days, in our example (2/5 * DPPC_1) + (3/5 * DPPC_2)</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum">
-<em class="property">class </em><code class="sig-prename descclassname">specsnake.sfg_spectrum.</code><code class="sig-name descname">SfgSpectrum</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum" title="Permalink to this definition">¶</a></dt>
-<dd><p>The SFG spectrum class is the foundation of all analysis and plotting tools. It contains a class
-SystematicName (or a derived class) which carries most of the metainformation. Besides holding the
-experimental data, it gives access to a variety of functions like normalization, peak picking etc.</p>
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.calculate_ch_integral">
-<code class="sig-name descname">calculate_ch_integral</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">old_baseline</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.calculate_ch_integral" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the integral of the spectrum in the range of 2750-3000 wavenumbers</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.convert_to_export_dataframe">
-<code class="sig-name descname">convert_to_export_dataframe</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.convert_to_export_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function returns a Pandas dataframe, suitable for data export to
-origin and similar other programs</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a pandas dataframe with the spectral data</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.drop_ascii">
-<code class="sig-name descname">drop_ascii</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.drop_ascii" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create an ascii file with the wavenumbers and normalized intensities</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.integrate_peak">
-<code class="sig-name descname">integrate_peak</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">y_array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.integrate_peak" title="Permalink to this definition">¶</a></dt>
-<dd><p>Numpy integration routine for numerical peak integration with the trapezoidal rule.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x_array</strong> (<em>array-like</em>) – the x values (spacing) of the curve to integrate</p></li>
-<li><p><strong>y_array</strong> (<em>array-like</em>) – the y values of the curve to integrate</p></li>
+<div class="section" id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="specsnake.html">specsnake package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#module-specsnake.base_spectrum">specsnake.base_spectrum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#module-specsnake.builtin_loaders">specsnake.builtin_loaders module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#module-specsnake.cli">specsnake.cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#module-specsnake.exceptions">specsnake.exceptions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#module-specsnake.langmuir_isotherm">specsnake.langmuir_isotherm module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#module-specsnake.plotting">specsnake.plotting module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#module-specsnake.sfg_spectrum">specsnake.sfg_spectrum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#module-specsnake.spectrum_factory">specsnake.spectrum_factory module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specsnake.html#module-specsnake">Module contents</a></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the area under the x/y curve</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.normalize_to_highest">
-<code class="sig-name descname">normalize_to_highest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">intensity</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">external_norm</span><span class="o">=</span><span class="default_value">'none'</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.normalize_to_highest" title="Permalink to this definition">¶</a></dt>
-<dd><p>normalize an given array to its maximum, typically the normalized or raw intensity</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.root">
-<code class="sig-name descname">root</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.root" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the spectrum’s normalized intensity</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.slice_by_borders">
-<code class="sig-name descname">slice_by_borders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.slice_by_borders" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes a high (upper) and a low (lower) reciprocal centimeter value as argument. Returns
-the indices of the wavenumber array of the spectrum that are the borders of this interval.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.yield_increment">
-<code class="sig-name descname">yield_increment</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.yield_increment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates stepsize and wavenumbers where the stepsize is changed</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.yield_maximum">
-<code class="sig-name descname">yield_maximum</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.yield_maximum" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>maximum intensity value of the spectrum</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="specsnake.sfg_spectrum.SfgSpectrum.yield_spectral_range">
-<code class="sig-name descname">yield_spectral_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#specsnake.sfg_spectrum.SfgSpectrum.yield_spectral_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns a list containing maximum and minimum wavenumer and the number of data points</p>
-</dd></dl>
-
-</dd></dl>
-
+</li>
+</ul>
+</div>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -590,6 +245,13 @@ the indices of the wavenumber array of the spectrum that are the borders of this
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="specsnake.html" class="btn btn-neutral float-right" title="specsnake package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
   
 
   <hr/>

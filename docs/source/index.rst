@@ -5,53 +5,12 @@
 
 .. include:: ../../README.md
 
+.. include:: framework_example.rst
+
 The following sections contains the detailed documentation of all modules, classes and function
 of this package.
 
-.. include:: framework_example.rst
-
-base_spectrum
-==============
-.. automodule:: specsnake.base_spectrum
-   :members:
-
-builtin_loaders
-================
-.. automodule:: specsnake.builtin_loaders
-   :members:
-
-command line interface (cli)
-============================
-.. automodule:: specsnake.cli
-   :members:
-
-exceptions
-==========
-.. automodule:: specsnake.exceptions
-   :members:
-   :show-inheritance:
-
-langmuir_isotherm
-=================
-.. automodule:: specsnake.langmuir_isotherm
-   :members:
-   :show-inheritance:
-
-plotting
-========
-.. automodule:: specsnake.plotting
-   :members:
-   :show-inheritance:
-
-spectrum_factory
-================
-.. automodule:: specsnake.spectrum_factory
-   :members:
-
-sfg_spectrum
-================
-.. automodule:: specsnake.sfg_spectrum
-   :members:
+.. include:: modules.rst
 
 Indices and tables
 ==================

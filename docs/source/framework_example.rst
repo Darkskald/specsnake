@@ -11,7 +11,7 @@
 
     # To register a new type of spectra to the framework, we need an extractor to load the data from
     # the file, a constructor to instantiate the spectrum object and (optionally) a name transformer
-    # to
+    # to convert the file name to a string suitable to appear in a plot legend.
 
     # From the file we need two columns at the indices 2 and 4 with the names area surface pressure.
     # The file contains comments starting with '#' so we generate a suitable extractor.
