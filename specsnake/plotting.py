@@ -4,7 +4,7 @@ from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
-from .base_spectrum import BaseSpectrum
+from specsnake.base_spectrum import BaseSpectrum
 
 # todo add support for plot file
 

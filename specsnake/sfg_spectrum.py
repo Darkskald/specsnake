@@ -1,8 +1,9 @@
+from __future__ import annotations
 import copy
 import csv
 import datetime
-from typing import List
-
+from typing import List, Tuple
+import logging
 import numpy as np
 import pandas as pd
 import peakutils
@@ -12,15 +13,23 @@ from scipy.integrate import simps as sp, trapz as tp
 from .base_spectrum import BaseSpectrum
 from .exceptions import CoverageCalculationImpossibleError
 
+logger = logging.getLogger(__name__)
+
 
 class SfgSpectrum(BaseSpectrum):
     """The SFG spectrum class is the foundation of all analysis and plotting tools. It contains a class
     SystematicName (or a derived class) which carries most of the metainformation. Besides holding the
     experimental data, it gives access to a variety of functions like normalization, peak picking etc."""
 
-    # magic methods
     def __init__(self, wavenumbers, intensity, ir_intensity, vis_intensity, meta):
+        """
 
+        :param wavenumbers: wavenumber of the tunable IR beam
+        :param intensity: recored SFG intenity
+        :param ir_intensity: IR reference detector intensity
+        :param vis_intensity: VIS reference detector intensity
+        :param meta: metadata dictionary, including timestamp of creation
+        """
         self.x = wavenumbers[::-1]
         self.raw_intensity = intensity[::-1]
         self.vis_intensity = vis_intensity[::-1]
@@ -36,27 +45,13 @@ class SfgSpectrum(BaseSpectrum):
         self.regions = None
         self.set_regions()
 
-    def __lt__(self, SFG2) -> bool:
-        """Returns true if the current spectrum was measured before SFG2"""
-        if self.meta["creation_time"] < SFG2.name.meta["creation_time"]:
-            return True
-        else:
-            return False
+    def __lt__(self, other: SfgSpectrum) -> bool:
+        """Returns true if the current spectrum was measured before SFG2
+        :param other: other SFG spectrum to compare to
+        """
+        return True if self.meta["creation_time"] < other.name.meta["creation_time"] else False
 
     # spectral data processing and analysis tools
-
-    def normalize_to_highest(self, intensity="default", external_norm="none") -> np.ndarray:
-        """normalize an given array to its maximum, typically the normalized or raw intensity"""
-        # todo: this function is somehow strange
-        if intensity == "default":
-            intensity = self.y
-        if external_norm == "none":
-            norm_factor = np.max(intensity)
-        else:
-            norm_factor = external_norm
-
-        return intensity / norm_factor
-
     def integrate_peak(self, x_array: np.ndarray, y_array: np.ndarray) -> float:
         """
         Numpy integration routine for numerical peak integration with the trapezoidal rule.
@@ -73,7 +68,6 @@ class SfgSpectrum(BaseSpectrum):
             if np.isnan(area):
                 area = tp(y_array, x_array)
             return area
-
         except:
             raise ValueError(f'Integration not possible for {self.name}')
 
@@ -148,7 +142,7 @@ class SfgSpectrum(BaseSpectrum):
 
     # CH baseline correction and integration
 
-    # todo das hier ist ganz großer Mist und richtig error-prone
+    # todo this is error-prone and requires replacement
     def make_ch_baseline(self, debug=False):
 
         # todo: interchange high and low at the slice borders function
@@ -182,7 +176,8 @@ class SfgSpectrum(BaseSpectrum):
         return baseline
 
     def correct_baseline(self):
-
+        """If the baseline correction was not performed, set the instance attribute baseline_corrected to baseline-corrected
+        array of the initial y value."""
         if self.baseline_corrected is None:
             temp = copy.deepcopy(self.y)
 
@@ -215,16 +210,15 @@ class SfgSpectrum(BaseSpectrum):
         self.baseline_corrected = temp
 
     def calculate_ch_integral(self, old_baseline=False) -> float:
-        """Calculate the integral of the spectrum in the range of 2750-3000 wavenumbers"""
-
-        # choose between the old and new style of baseline correction
+        """Calculate the integral of the spectrum in the range of 2750-3000 wavenumbers. Use the switch 'old_baseline' :exception
+        to choose between the old and new style of baseline correction"""
         if old_baseline:
             self.correct_baseline()
         else:
             try:
                 self.baseline_corrected = self.full_baseline_correction()
             except ValueError:
-                print(f'{self} does not yield acceptable baseline by peakutils!')
+                logger.warning(f'{self} does not yield acceptable baseline by peakutils!')
                 self.correct_baseline()
 
         # check upper border
@@ -253,15 +247,15 @@ class SfgSpectrum(BaseSpectrum):
         try:
             integral = self.integrate_peak(x_array, y_array)
             if np.isnan(integral):
-                print(f'x: {x_array}, y: {y_array}')
+                logger.warning(f'x: {x_array}, y: {y_array}')
             return integral
 
         except ValueError:
-            print(f'Integration not possible in {self.name} in region{region}')
+            logger.warning(f'Integration not possible in {self.name} in region{region}')
             return np.nan
 
     # auxiliary function
-    def slice_by_borders(self, lower, upper):
+    def slice_by_borders(self, lower, upper) -> Tuple[int, int]:
         """Takes a high (upper) and a low (lower) reciprocal centimeter value as argument. Returns
         the indices of the wavenumber array of the spectrum that are the borders of this interval."""
         lower_index = np.argmax(self.x >= lower)

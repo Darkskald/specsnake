@@ -7,9 +7,6 @@
 
 .. include:: framework_example.rst
 
-The following sections contains the detailed documentation of all modules, classes and function
-of this package.
-
 .. include:: modules.rst
 
 Indices and tables

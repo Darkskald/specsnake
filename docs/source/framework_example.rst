@@ -15,8 +15,8 @@
 
     # From the file we need two columns at the indices 2 and 4 with the names area surface pressure.
     # The file contains comments starting with '#' so we generate a suitable extractor.
-    col_names = ["time", "area", "apm", "surface_pressure"]
-    extractor = ExtractorFactory(columns=[1, 2, 3, 4], column_names=col_names, comment='#').build()
+    col_names = ("area",  "surface_pressure")
+    extractor = ExtractorFactory(columns=(2, 4), column_names=col_names, comment='#').build()
 
     # The constructor is required to convert the data to an actual spectrum object. Using the generic BaseSpectrum
     # class, this is straightforward and requires only passing of the desired names for x and y unit strings.
