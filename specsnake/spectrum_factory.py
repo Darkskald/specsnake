@@ -42,7 +42,7 @@ class SpectrumFactoryProvider:
 
 
 class CustomSpectrumFactory:
-    # todo: add signatures for the callable parameters here
+
     def __init__(self, extractor: Callable[[Path], Any], constructor: [[str, Any, datetime.datetime], BaseSpectrum],
                  name_transformer: Callable[[str], str] = None):
         """Configure the factory to create spectrum objects from raw measurement data. The extractor is a function that extracts
@@ -75,5 +75,10 @@ class CustomSpectrumFactory:
 
     def build_batch(self, directory: Path, file_ending='*') -> List[BaseSpectrum]:
         """A convenience function to apply the builder to all spectra within the directoy and return a list of spectra.
-        Can receive a pattern for the file ending to avoid the wrong files being imported."""
+        Can receive a pattern for the file ending to avoid the wrong files being imported.
+        :param directory: the directory in which all files shall be converted to spectra
+        :param file_ending: restricts the extraction to files in the directory with a specific file ending
+        :return: a list of spectrum instances
+
+        """
         return [self.build_from_file(p) for p in directory.rglob(file_ending)]

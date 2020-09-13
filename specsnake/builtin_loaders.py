@@ -20,18 +20,29 @@ class ExtractorFactory:
 
     def build(self) -> Callable[[str], pd.DataFrame]:
         """Removes all None values from the configuration, passes it as argument to partial and returns a modified
-        verion of pandas' read_csv method. The returned function should only take the file name as argument."""
+        verion of pandas' read_csv method. The returned function should only take the file name as argument.
+
+        :return: an extractor function
+        """
         final_config = {key: value for key, value in self.config.items() if value is not None}
         return partial(pd.read_csv, **final_config)
 
 
-def provide_spectrum_constructor(x, y, **kwargs):
+def provide_spectrum_constructor(x: str, y: str, **kwargs):
+    """
+    A convenience function to provide pre-configured constructors for BaseSpectrum objects with custom x and y units
+    and data columns to use.
+
+    :param x: name of the column of the extraced data set thet shall be set as x
+    :param y: name of the column of the extraced data set thet shall be set as y
+    :param kwargs: configuration parameters, typcialle 'x_unit' and 'y_unit'
+    :return:
+    """
     def spectrum_constructor(name, data, creation_time):
         attributes = kwargs
         attributes['x'] = data[x].to_numpy()
         attributes['y'] = data[y].to_numpy()
         attributes['timestamp'] = creation_time
-        print(attributes)
         return BaseSpectrum(name=name, **attributes)
 
     return spectrum_constructor

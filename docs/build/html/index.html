@@ -177,8 +177,8 @@ execution which is currently under development.</p>
 
 <span class="c1"># From the file we need two columns at the indices 2 and 4 with the names area surface pressure.</span>
 <span class="c1"># The file contains comments starting with &#39;#&#39; so we generate a suitable extractor.</span>
-<span class="n">col_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;apm&quot;</span><span class="p">,</span> <span class="s2">&quot;surface_pressure&quot;</span><span class="p">]</span>
-<span class="n">extractor</span> <span class="o">=</span> <span class="n">ExtractorFactory</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">column_names</span><span class="o">=</span><span class="n">col_names</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">col_names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;area&quot;</span><span class="p">,</span>  <span class="s2">&quot;surface_pressure&quot;</span><span class="p">)</span>
+<span class="n">extractor</span> <span class="o">=</span> <span class="n">ExtractorFactory</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">column_names</span><span class="o">=</span><span class="n">col_names</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 
 <span class="c1"># The constructor is required to convert the data to an actual spectrum object. Using the generic BaseSpectrum</span>
 <span class="c1"># class, this is straightforward and requires only passing of the desired names for x and y unit strings.</span>
@@ -208,8 +208,6 @@ execution which is currently under development.</p>
 </pre></div>
 </div>
 <p>This code generates the same plot like the example above.</p>
-<p>The following sections contains the detailed documentation of all modules, classes and function
-of this package.</p>
 </div>
 <div class="section" id="documentation">
 <h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
