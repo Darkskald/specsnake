@@ -71,7 +71,7 @@ class BaseSpectrum(metaclass=MetaSpectrum):
     def normalize(self, external=None) -> np.array:
         """Normalize the spectrum's y data either to the maximum of the y values or an
         external factor"""
-        return np.max(self.y) if external else self.y / external
+        return self.y / np.max(self.y) if external is None else self.y / external
 
     def integrate_slice(self, x_array: np.array, y_array: np.array) -> np.array:
         """Integrates the y_array which has a spacing given by the x_array. First it tries to apply
