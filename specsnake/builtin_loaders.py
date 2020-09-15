@@ -13,7 +13,8 @@ class ExtractorFactory:
     separators etc., this class has the purpose to create custom extractor functions quickly. Basically, this
     is a convenience wrapper around pandas' read_csv method call."""
 
-    def __init__(self, sep='\t', columns=None, column_names=None, encoding=None, engine='c', comment=None, skip=None):
+    def __init__(self, sep=None, columns=None, column_names=None, encoding=None, engine='python', comment=None,
+                 skip=None):
         """Set the parameters to fit the shape of the input data to load."""
         self.config = {'sep': sep, 'usecols': columns, 'names': column_names, 'encoding': encoding,
                        'engine': engine, 'comment': comment, 'skiprows': skip}
@@ -38,6 +39,7 @@ def provide_spectrum_constructor(x: str, y: str, **kwargs):
     :param kwargs: configuration parameters, typcialle 'x_unit' and 'y_unit'
     :return:
     """
+
     def spectrum_constructor(name, data, creation_time):
         attributes = kwargs
         attributes['x'] = data[x].to_numpy()
@@ -69,3 +71,12 @@ def lt_extractor(file) -> pd.DataFrame:
 
 def lt_constructor(name, data, creation_time) -> LtIsotherm:
     return LtIsotherm(name, creation_time, data["time"], data["area"], data["apm"], data["surface_pressure"])
+
+
+# PD
+class pd_config:
+    col_names = ("2theta", "intensity")
+    pd_extractor = ExtractorFactory(column_names=col_names, engine='python', sep='\s+').build()
+
+    config = {'x_unit': 'diffraction angle/ 2$\Theta$', 'y_unit': 'intensity/counts'}
+    pd_constructor = provide_spectrum_constructor('2theta', 'intensity', **config)

@@ -379,7 +379,13 @@ class SfgAverager:
         """Calculate the participation of each DPPC references. This is important if the spectra to average are
         measured on different sampling days. If, for example,  5 samples are to average and 3 of them are measured
         on one day, 2 on another, the final coverage is calculated by dividing the AveragedSpectrum integral by the
-        weighted sum of the DPPC integrals of the corresponding days, in our example (2/5 * DPPC_1) + (3/5 * DPPC_2)"""
+        weighted sum of the DPPC integrals of the corresponding days, in our example
+
+        .. math::
+
+            \\frac{2}{5} \\cdot r_1 + \\frac{3}{5} \\cdot r_2
+
+        """
 
         spec_number = len(self.spectra)
         total = 0
