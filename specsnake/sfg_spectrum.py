@@ -168,7 +168,7 @@ class SfgSpectrum(BaseSpectrum):
         intercept = np.average(left_y) - slope * np.average(left_x)
 
         if debug:
-            print(f'intercept: {intercept}, slope: {slope}, left:{left}, right: {right}')
+            logger.debug(f'intercept: {intercept}, slope: {slope}, left:{left}, right: {right}')
 
         def baseline(x):
             return x * slope + intercept
@@ -217,7 +217,7 @@ class SfgSpectrum(BaseSpectrum):
         else:
             try:
                 self.baseline_corrected = self.full_baseline_correction()
-            except ValueError:
+            except (ValueError, ZeroDivisionError):
                 logger.warning(f'{self} does not yield acceptable baseline by peakutils!')
                 self.correct_baseline()
 
@@ -281,46 +281,39 @@ class SfgSpectrum(BaseSpectrum):
         return np.concatenate([left - base, right - base2])
 
 
+# todo: check on instantiation if a spectrum has a suitable reference, exclude it
+# todo: document the parameters
+
 class SfgAverager:
     # todo: throw an error and plot the spectra if the integral is NAN or zero!
     # todo: the benchmark function MUST display the integral value and the baseline
-    # todo: replace print comments by professional logging
+    # todo: die reference_participation methode ist einfach ultimativ hässlich. das geht besser
     """This class takes a list of SFG spectra and generates an average spectrum of them by interpolation and
     averaging. It is possible to pass a dictionary of date:dppc_integral key-value-pairs in order to calculate
     the coverage."""
 
-    def __init__(self, spectra: List[SfgSpectrum], references=None, enforce_scale=False, name="default", debug=False,
+    def __init__(self, spectra: List[SfgSpectrum], references=None, enforce_scale=False, name="default",
                  baseline=False):
-        self.failure_count = 0
-        self.log = ""
-        self.log += "Log file for averaging spectra\n"
         self.spectra = spectra
         self.references = references
         self.enforce_scale = enforce_scale
         self.name = name
+        self.day_counter = {}
+        self.average_spectrum = None
+        self.integral = None
+        self.coverage = None
+        self.total = None
 
         if len(self.spectra) == 0:
-            print("Warning: zero spectra to average in SfgAverager!")
-            self.average_spectrum = None
-            self.integral = None
-            self.coverage = None
+            logger.warning("Warning: zero spectra to average in SfgAverager!")
 
         else:
-            self.day_counter = {}
-
             self.average_spectrum = self.average_spectra(baseline=baseline)
             self.integral = self.average_spectrum.calculate_ch_integral()
             try:
                 self.coverage = self.calc_coverage()
             except CoverageCalculationImpossibleError:
                 self.coverage = None
-
-            if debug:
-                if self.integral < 0:
-                    self.benchmark()
-                    logger.warning("Warning: negative integral value in SfgAverager!")
-                    self.integral = 0
-                    self.coverage = 0
 
     def average_spectra(self, baseline=True):
         """Function performing the averaging: it ensures that all spectra are interpolated to have the same shape,
@@ -337,9 +330,6 @@ class SfgAverager:
         # get y values by interpolation and collect the y values in a list
         # collect the dates of measurement for DPPC referencing
         for item in self.spectra:
-
-            if 0 <= item.meta["time"].hour < 8:
-                item.meta["time"] -= datetime.timedelta(days=1)
 
             date = item.meta["time"].date()
 
@@ -386,63 +376,44 @@ class SfgAverager:
 
         spec_number = len(self.spectra)
         total = 0
-        self.log += f'Start of the reference calculating section: \n'
+        logger.info(f'Start of the reference calculating section:')
 
         for date in self.day_counter:
             # divide by total number of spectra in the average
-            self.log += f'date {date} divided by the number of spectra {spec_number}\n'
-            self.day_counter[date] /= spec_number
+            logger.info(f'date {date} divided by the total spec number to average {spec_number}')
+        self.day_counter[date] /= spec_number
 
-            # multiply the weighting factor by the integral of the day
-            try:
-                self.log += f"""Now multiplying the factor {self.day_counter[date]} 
-                by the reference integral {self.references[date]}\n"""
+        # multiply the weighting factor by the integral of the day
+        try:
+            self.day_counter[date] *= self.references[date]
+            total += self.day_counter[date]
+            logger.info(f"""Now multiplying the factor {self.day_counter[date]} 
+                by the reference integral {self.references[date]} resulting in a dppc_factor of {total:-4f}""")
+        except KeyError:
+            logger.error(f'Error: no suitable DPPC reference found four date {date}')
 
-                self.day_counter[date] *= self.references[date]
-                total += self.day_counter[date]
-            except KeyError:
-                self.failure_count += 1
-                self.log += f'Error: no suitable DPPC reference found four date {date}\n'
-
-        self.log += f'Finalizing calculation. The total factor now is {total}.\n'
-
+        self.total = total
         return total
 
     def calc_coverage(self):
         """A convenience function  to calculate the surface coverage"""
-
         if self.references is not None:
             dppc_factor = self.calc_reference_part()
-            coverage = np.sqrt(self.integral / dppc_factor)
+            integral = self.average_spectrum.calculate_ch_integral()
+            coverage = np.sqrt(integral / dppc_factor)
+            logger.info(f'Calculating coverage: integral = {integral:.4f}, '
+                        f'dppc_factor = {dppc_factor:.4f}, coverage = {coverage:.4f}')
             return coverage
 
         else:
             raise CoverageCalculationImpossibleError(
                 f'Coverage not available for reference samples, integral is {self.integral}!')
 
-    def benchmark(self):
-        self.create_log()
-        l = [i for i in self.spectra]
-        l.append(self.average_spectrum)
-        p = DummyPlotter(l, save=True, savename=self.spectra[0].name, special="AV")
-        p.plot_all()
+    def correct_measured_time(self):
+        for item in self.spectra:
 
-    def create_log(self):
-
-        name = "benchmark/" + self.spectra[0].name + ".log"
-
-        s = f'This average contains {len(self.spectra)} SFG spectra:\n'
-
-        self.log += 80 * "-" + "\n"
-        self.log += s
-        for i in self.spectra:
-            self.log += (i.name + "\n")
-
-        self.log += 80 * "-" + "\n"
-        s = f'integral: {self.integral}\ncoverage: {self.coverage}\n'
-
-        # with open(name, "w") as outfile:
-        # outfile.write(self.log)
+            if 0 <= item.meta["time"].hour < 8:
+                item.meta["time"] -= datetime.timedelta(days=1)
 
     @staticmethod
     def enforce_base():
