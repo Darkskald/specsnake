@@ -25,6 +25,4 @@ setup(
         'console_scripts':
         ['specsnake=specsnake.cli:cli']}
 )
-
-# todo: install requirements with the help of this file
 # todo: Dockerize

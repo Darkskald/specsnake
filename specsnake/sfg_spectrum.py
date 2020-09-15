@@ -2,7 +2,7 @@ from __future__ import annotations
 import copy
 import csv
 import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Any
 import logging
 import numpy as np
 import pandas as pd
@@ -10,8 +10,8 @@ import peakutils
 from matplotlib import pyplot as plt
 from scipy.integrate import simps as sp, trapz as tp
 
-from .base_spectrum import BaseSpectrum
-from .exceptions import CoverageCalculationImpossibleError
+from specsnake.base_spectrum import BaseSpectrum
+from specsnake.exceptions import CoverageCalculationImpossibleError
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,8 @@ class SfgSpectrum(BaseSpectrum):
     SystematicName (or a derived class) which carries most of the metainformation. Besides holding the
     experimental data, it gives access to a variety of functions like normalization, peak picking etc."""
 
-    def __init__(self, wavenumbers, intensity, ir_intensity, vis_intensity, meta):
+    def __init__(self, wavenumbers: np.ndarray, intensity: np.ndarray, ir_intensity: np.ndarray,
+                 vis_intensity: np.ndarray, meta: Dict[str, Any]):
         """
 
         :param wavenumbers: wavenumber of the tunable IR beam
@@ -282,18 +283,24 @@ class SfgSpectrum(BaseSpectrum):
 
 
 # todo: check on instantiation if a spectrum has a suitable reference, exclude it
-# todo: document the parameters
 
 class SfgAverager:
-    # todo: throw an error and plot the spectra if the integral is NAN or zero!
-    # todo: the benchmark function MUST display the integral value and the baseline
-    # todo: die reference_participation methode ist einfach ultimativ hässlich. das geht besser
+    # todo: reference_part function needs refactoring for readability, it's not pythonic
     """This class takes a list of SFG spectra and generates an average spectrum of them by interpolation and
     averaging. It is possible to pass a dictionary of date:dppc_integral key-value-pairs in order to calculate
     the coverage."""
 
-    def __init__(self, spectra: List[SfgSpectrum], references=None, enforce_scale=False, name="default",
-                 baseline=False):
+    def __init__(self, spectra: List[SfgSpectrum], references: Dict[datetime.date, float] = None,
+                 enforce_scale: bool = False, name: str = "default",
+                 baseline: bool = False):
+        """
+
+        :param spectra: list of SFG spectra to average
+        :param references: a dictionary of average DPPC integrals mapped to the corresponding dates of measurement
+        :param enforce_scale: if True, the resulting average spectrum is enfored to have a certain scale
+        :param name: a name to add as plot title of file ending for export
+        :param baseline: if enabled, baseline correction ois applied to the resulting average spectrum
+        """
         self.spectra = spectra
         self.references = references
         self.enforce_scale = enforce_scale
@@ -315,7 +322,7 @@ class SfgAverager:
             except CoverageCalculationImpossibleError:
                 self.coverage = None
 
-    def average_spectra(self, baseline=True):
+    def average_spectra(self, baseline=True) -> AverageSpectrum:
         """Function performing the averaging: it ensures that all spectra are interpolated to have the same shape,
         then they are averaged. A AverageSpectrum  object is constructed and returned."""
         to_average = []
@@ -368,7 +375,7 @@ class SfgAverager:
 
         return s
 
-    def calc_reference_part(self):
+    def calc_reference_part(self) -> float:
         """Calculate the participation of each DPPC references. This is important if the spectra to average are
         measured on different sampling days. If, for example,  5 samples are to average and 3 of them are measured
         on one day, 2 on another, the final coverage is calculated by dividing the AveragedSpectrum integral by the
@@ -395,7 +402,7 @@ class SfgAverager:
         self.total = total
         return total
 
-    def calc_coverage(self):
+    def calc_coverage(self) -> float:
         """A convenience function  to calculate the surface coverage"""
         if self.references is not None:
             dppc_factor = self.calc_reference_part()
@@ -416,7 +423,7 @@ class SfgAverager:
                 item.meta["time"] -= datetime.timedelta(days=1)
 
     @staticmethod
-    def enforce_base():
+    def enforce_base() -> np.ndarray:
         reg1 = np.arange(2750, 3055, 5)
         reg2 = np.arange(3050, 3670, 20)
         reg3 = np.arange(3650, 3845, 5)
@@ -425,8 +432,10 @@ class SfgAverager:
 
 
 class AverageSpectrum(SfgSpectrum):
+    """The class resulting from averaging multiple spectra. It is awary of the spectra it was generated
+    from."""
 
-    def __init__(self, wavenumbers, intensities, meta):
+    def __init__(self, wavenumbers: np.ndarray, intensities: np.ndarray, meta: dict[str, Any]):
         self.x = wavenumbers
         self.y = intensities
         self.x_unit = "wavenumber/ cm$^{-1}$"
