@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Callable, List
 
 from .base_spectrum import BaseSpectrum
-from .builtin_loaders import sfg_extractor, sfg_constructor, lt_extractor, lt_constructor, pd_config
+from .builtin_loaders import sfg_extractor, sfg_constructor, lt_extractor, lt_constructor, _PdConfig
 from .exceptions import SpectrumTypeNotAvailableError
 
 
@@ -18,7 +18,7 @@ class SpectrumFactoryProvider:
     global_factory_config = {
         "sfg": {"extractor": sfg_extractor, "constructor": sfg_constructor},
         "lt": {"extractor": lt_extractor, "constructor": lt_constructor},
-        "pd": {'extractor': pd_config.pd_extractor, "constructor": pd_config.pd_constructor}
+        "pd": {'extractor': _PdConfig.pd_extractor, "constructor": _PdConfig.pd_constructor}
     }
 
     def provide_factory_by_name(self, name: str) -> CustomSpectrumFactory:

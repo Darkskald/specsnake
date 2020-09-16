@@ -68,6 +68,10 @@ class BaseSpectrum(metaclass=MetaSpectrum):
         lower, upper = self.get_xrange_indices()
         return self.x[lower, upper + 1]
 
+    def get_nearest_index(self, x_value: float) -> int:
+        """Returns the index of the spectrum's x value closest to the given x_value"""
+        return int(np.argmax(self.x >= x_value))
+
     def normalize(self, external=None) -> np.array:
         """Normalize the spectrum's y data either to the maximum of the y values or an
         external factor"""

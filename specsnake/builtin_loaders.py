@@ -74,7 +74,7 @@ def lt_constructor(name, data, creation_time) -> LtIsotherm:
 
 
 # PD
-class pd_config:
+class _PdConfig:
     col_names = ("2theta", "intensity")
     pd_extractor = ExtractorFactory(column_names=col_names, engine='python', sep='\s+').build()
 
