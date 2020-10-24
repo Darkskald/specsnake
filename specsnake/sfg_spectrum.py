@@ -90,7 +90,7 @@ class SfgSpectrum(BaseSpectrum):
         """returns a list containing maximum and minimum wavenumer and the number of data points"""
         return [min(self.x), max(self.x), len(self.x)]
 
-    def yield_increment(self):
+    def yield_increment(self) -> List[List[Any], List[Any]]:
         """Calculates stepsize and wavenumbers where the stepsize is changed"""
         borders = []
         stepsize = []
@@ -141,12 +141,35 @@ class SfgSpectrum(BaseSpectrum):
         }
         return pd.DataFrame(data=data)
 
-    # CH baseline correction and integration
+    # auxiliary function
+    def slice_by_borders(self, lower, upper) -> Tuple[int, int]:
+        """Takes a high (upper) and a low (lower) reciprocal centimeter value as argument. Returns
+        the indices of the wavenumber array of the spectrum that are the borders of this interval."""
+        lower_index = np.argmax(self.x >= lower)
+        upper_index = np.argmax(self.x >= upper)
+        return int(lower_index), int(upper_index)
 
-    # todo this is error-prone and requires replacement
+    def set_regions(self):
+        self.regions = {"CH": (int(np.min(self.x)), 3000),
+                        "dangling": (3670, 3760),
+                        "OH": (3005, 3350), "OH2": (3350, 3670)}
+
+    def split_y_into_halfs(self):
+        lower = self.get_xrange_indices(np.min(self.x), 3030)
+        upper = self.get_xrange_indices(3030, np.max(self.x))
+
+        # it may happen that extremely small negative numbers appear, causing the square root to fail. Those will be set
+        # to zero here. The next problem is that sometimes a division by zero value in the normalization leads to the
+        # occurrence of NAN values. They will be also set to zero
+        negative_removed = SfgSpectrum.remove_nan_and_negative(self.y)
+
+        left = negative_removed[lower[0]:lower[1] + 1]
+        right = negative_removed[upper[0] + 1:upper[1] + 1]
+        return left, right
+
+    # baseline correction
     def make_ch_baseline(self, debug=False):
 
-        # todo: interchange high and low at the slice borders function
         if np.min(self.x) > 2800:
             left = self.slice_by_borders(np.min(self.x), 2815)
         else:
@@ -179,64 +202,77 @@ class SfgSpectrum(BaseSpectrum):
     def correct_baseline(self):
         """If the baseline correction was not performed, set the instance attribute baseline_corrected to baseline-corrected
         array of the initial y value."""
-        if self.baseline_corrected is None:
-            temp = copy.deepcopy(self.y)
+        if self.baseline_corrected is not None:
+            return self.baseline_corrected
 
         else:
             # if the baseline correction already was performed, return immediately
-            return
+            temp = copy.deepcopy(self.y)
 
-        if np.max(self.x) >= 3000:
-            borders = (2750, 3000)
-        else:
-            borders = (2750, np.max(self.x))
+            if np.max(self.x) >= 3000:
+                borders = (2750, 3000)
+            else:
+                borders = (2750, np.max(self.x))
 
-        func = self.make_ch_baseline()
+            func = self.make_ch_baseline()
 
-        xvals = self.x.copy()
-        corr = func(xvals)
+            xvals = self.x.copy()
+            corr = func(xvals)
 
-        # ensure that only the region of the spec defined in the borders is used
-        # xvals is a vector being 0 everywhere except in the to-correct area where it
-        # is 1 so that xvals*corr yields nonzero in the defined regions only
-        np.putmask(xvals, xvals < borders[0], 0)
-        np.putmask(xvals, xvals > borders[1], 0)
-        np.putmask(xvals, xvals != 0, 1)
+            # ensure that only the region of the spec defined in the borders is used
+            # xvals is a vector being 0 everywhere except in the to-correct area where it
+            # is 1 so that xvals*corr yields nonzero in the defined regions only
+            np.putmask(xvals, xvals < borders[0], 0)
+            np.putmask(xvals, xvals > borders[1], 0)
+            np.putmask(xvals, xvals != 0, 1)
 
-        corr *= xvals
+            corr *= xvals
 
-        # apply the correction
-        temp -= corr
+            # apply the correction
+            temp -= corr
 
-        self.baseline_corrected = temp
+            self.baseline_corrected = temp
+            return temp
 
-    def calculate_ch_integral(self, old_baseline=False) -> float:
+    def full_baseline_correction(self):
+        left, right = self.split_y_into_halfs()
+        left_base = peakutils.baseline(left, deg=1)
+        right_base = peakutils.baseline(right, deg=1)
+        return np.concatenate([left - left_base, right - right_base])
+
+    def root_baseline_correction(self, square=False):
+        left, right = self.split_y_into_halfs()
+        left = SfgSpectrum.remove_nan_and_negative(np.sqrt(left))
+        right = SfgSpectrum.remove_nan_and_negative(np.sqrt(right))
+
+        left_base = peakutils.baseline(left, deg=1)
+        right_base = peakutils.baseline(right, deg=1)
+        # todo: the general shape concat(left - left_base, right - right_base) may be abstracted
+        return np.concatenate([left - left_base, right - right_base])
+
+    # integration
+    def calculate_ch_integral(self, baseline_function=None) -> float:
         """Calculate the integral of the spectrum in the range of 2750-3000 wavenumbers. Use the switch 'old_baseline' :exception
         to choose between the old and new style of baseline correction"""
-        if old_baseline:
-            self.correct_baseline()
-        else:
-            try:
-                self.baseline_corrected = self.full_baseline_correction()
-            except (ValueError, ZeroDivisionError):
-                logger.warning(f'{self} does not yield acceptable baseline by peakutils!')
-                self.correct_baseline()
+        if baseline_function is None:
+            baseline_function = self.full_baseline_correction
 
         # check upper border
-        if max(self.x) >= 3000:
-            upper = 3000
-        else:
-            upper = max(self.x)
+        upper = 3000 if max(self.x) >= 3000 else max(self.x)
 
         # check lower border
-        if min(self.x) <= 2750:
-            lower = 2750
-        else:
-            lower = min(self.x)
+        lower = 2750 if min(self.x) <= 2750 else min(self.x)
 
         borders = self.slice_by_borders(lower, upper)
         x_array = self.x[borders[0]:borders[1] + 1]
-        y_array = self.baseline_corrected[borders[0]:borders[1] + 1]
+        # todo at this stage the baseline algorithm has to be chosen
+        try:
+            y_array = baseline_function()[borders[0]:borders[1] + 1]
+        except ValueError:
+            y_array = self.correct_baseline()[borders[0]:borders[1] + 1]
+            logger.error(f'{self.name} in borders of {self.yield_spectral_range()} fails in normal baseline routine.'
+                         f'Falling back to old procedure.')
+
         integral = self.integrate_peak(x_array, y_array)
         return integral
 
@@ -255,35 +291,13 @@ class SfgSpectrum(BaseSpectrum):
             logger.warning(f'Integration not possible in {self.name} in region{region}')
             return np.nan
 
-    # auxiliary function
-    def slice_by_borders(self, lower, upper) -> Tuple[int, int]:
-        """Takes a high (upper) and a low (lower) reciprocal centimeter value as argument. Returns
-        the indices of the wavenumber array of the spectrum that are the borders of this interval."""
-        lower_index = np.argmax(self.x >= lower)
-        upper_index = np.argmax(self.x >= upper)
-        return int(lower_index), int(upper_index)
-
-    def set_regions(self):
-        self.regions = {"CH": (int(np.min(self.x)), 3000),
-                        "dangling": (3670, 3760),
-                        "OH": (3005, 3350), "OH2": (3350, 3670)}
-
-    # new peak picking and baseline correction
-    def full_baseline_correction(self):
-        lower = self.get_xrange_indices(np.min(self.x), 3030)
-        upper = self.get_xrange_indices(3030, np.max(self.x))
-
-        left = self.y[lower[0]:lower[1] + 1]
-        right = (self.y[upper[0] + 1:upper[1] + 1])
-
-        base = peakutils.baseline(self.y[lower[0]:lower[1] + 1], deg=1)
-        base2 = peakutils.baseline(self.y[upper[0] + 1:upper[1] + 1], deg=1)
-
-        return np.concatenate([left - base, right - base2])
+    @staticmethod
+    def remove_nan_and_negative(array, replacement=0):
+        mask = (array < 0) | (~np.isfinite(array))
+        return np.where(mask, replacement, array)
 
 
 # todo: check on instantiation if a spectrum has a suitable reference, exclude it
-
 class SfgAverager:
     # todo: reference_part function needs refactoring for readability, it's not pythonic
     """This class takes a list of SFG spectra and generates an average spectrum of them by interpolation and
@@ -315,14 +329,14 @@ class SfgAverager:
             logger.warning("Warning: zero spectra to average in SfgAverager!")
 
         else:
-            self.average_spectrum = self.average_spectra(baseline=baseline)
+            self.average_spectrum = self.average_spectra()
             self.integral = self.average_spectrum.calculate_ch_integral()
             try:
                 self.coverage = self.calc_coverage()
             except CoverageCalculationImpossibleError:
                 self.coverage = None
 
-    def average_spectra(self, baseline=True) -> AverageSpectrum:
+    def average_spectra(self) -> AverageSpectrum:
         """Function performing the averaging: it ensures that all spectra are interpolated to have the same shape,
         then they are averaged. A AverageSpectrum  object is constructed and returned."""
         to_average = []
@@ -362,18 +376,7 @@ class SfgAverager:
         in_new = [n.name for n in self.spectra]
         s_meta = {"name": newname, "made_from": in_new, "std": std}
 
-        s = AverageSpectrum(root_x_scale, average, s_meta)
-
-        if baseline:
-            try:
-                s.y = s.full_baseline_correction()
-            except (ValueError, ZeroDivisionError):
-                if s.baseline_corrected:
-                    s.y = s.baseline_corrected
-                else:
-                    s.correct_baseline()
-
-        return s
+        return AverageSpectrum(root_x_scale, average, s_meta)
 
     def calc_reference_part(self) -> float:
         """Calculate the participation of each DPPC references. This is important if the spectra to average are
@@ -408,11 +411,12 @@ class SfgAverager:
         self.total = total
         return total
 
-    def calc_coverage(self) -> float:
-        """A convenience function  to calculate the surface coverage"""
+    def calc_coverage(self, baseline_function=None) -> float:
+        """A convenience function  to calculate the surface coverage. A custom function to yield a baseline-corrected
+        value of the spectrum's y data may be provided."""
         if self.references is not None:
             dppc_factor = self.calc_reference_part()
-            integral = self.average_spectrum.calculate_ch_integral()
+            integral = self.average_spectrum.calculate_ch_integral(baseline_function)
             coverage = np.sqrt(integral / dppc_factor)
             logger.info(f'Calculating coverage: integral = {integral:.4f}, '
                         f'dppc_factor = {dppc_factor:.4f}, coverage = {coverage:.4f}')
@@ -421,12 +425,6 @@ class SfgAverager:
         else:
             raise CoverageCalculationImpossibleError(
                 f'Coverage not available for reference samples, integral is {self.integral}!')
-
-    def correct_measured_time(self):
-        for item in self.spectra:
-
-            if 0 <= item.meta["time"].hour < 8:
-                item.meta["time"] -= datetime.timedelta(days=1)
 
     @staticmethod
     def enforce_base() -> np.ndarray:
@@ -438,7 +436,7 @@ class SfgAverager:
 
 
 class AverageSpectrum(SfgSpectrum):
-    """The class resulting from averaging multiple spectra. It is awary of the spectra it was generated
+    """The class resulting from averaging multiple spectra. It is aware of the spectra it was generated
     from."""
 
     def __init__(self, wavenumbers: np.ndarray, intensities: np.ndarray, meta: dict[str, Any]):
