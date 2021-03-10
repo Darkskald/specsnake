@@ -240,17 +240,18 @@ class SfgSpectrum(BaseSpectrum):
         right_base = peakutils.baseline(right, deg=1)
         return np.concatenate([left - left_base, right - right_base])
 
-    def root_baseline_correction(self, square=False):
+    def root_baseline_correction(self):
         left, right = self.split_y_into_halfs()
         left = SfgSpectrum.remove_nan_and_negative(np.sqrt(left))
         right = SfgSpectrum.remove_nan_and_negative(np.sqrt(right))
 
         left_base = peakutils.baseline(left, deg=1)
         right_base = peakutils.baseline(right, deg=1)
-        # todo: the general shape concat(left - left_base, right - right_base) may be abstracted
-        return np.concatenate([left - left_base, right - right_base])
+        result = np.concatenate([left - left_base, right - right_base])
+        return result ** 2
 
-    # integration
+        # integration
+
     def calculate_ch_integral(self, baseline_function=None) -> float:
         """Calculate the integral of the spectrum in the range of 2750-3000 wavenumbers. Use the switch 'old_baseline' :exception
         to choose between the old and new style of baseline correction"""
@@ -305,25 +306,26 @@ class SfgAverager:
     the coverage."""
 
     def __init__(self, spectra: List[SfgSpectrum], references: Dict[datetime.date, float] = None,
-                 enforce_scale: bool = False, name: str = "default",
-                 baseline: bool = False):
+                 enforce_scale: bool = False, name: str = "default"):
         """
 
-        :param spectra: list of SFG spectra to average
+        :pparam spectra: list of SFG spectra to average
         :param references: a dictionary of average DPPC integrals mapped to the corresponding dates of measurement
         :param enforce_scale: if True, the resulting average spectrum is enfored to have a certain scale
         :param name: a name to add as plot title of file ending for export
-        :param baseline: if enabled, baseline correction ois applied to the resulting average spectrum
         """
         self.spectra = spectra
         self.references = references
         self.enforce_scale = enforce_scale
         self.name = name
         self.day_counter = {}
+
         self.average_spectrum = None
         self.integral = None
         self.coverage = None
         self.total = None
+
+        self.calculate_day_counter()
 
         if len(self.spectra) == 0:
             logger.warning("Warning: zero spectra to average in SfgAverager!")
@@ -339,7 +341,6 @@ class SfgAverager:
     def average_spectra(self) -> AverageSpectrum:
         """Function performing the averaging: it ensures that all spectra are interpolated to have the same shape,
         then they are averaged. A AverageSpectrum  object is constructed and returned."""
-        to_average = []
 
         # sort spectra by length of the wavenumber array (lambda)
         if self.enforce_scale is False:
@@ -348,25 +349,8 @@ class SfgAverager:
         else:
             root_x_scale = SfgAverager.enforce_base()
 
-        # get y values by interpolation and collect the y values in a list
-        # collect the dates of measurement for DPPC referencing
-        for item in self.spectra:
-
-            date = item.meta["time"].date()
-
-            if date not in self.day_counter:
-                self.day_counter[date] = 1
-            else:
-                self.day_counter[date] += 1
-
-            new_intensity = np.interp(root_x_scale, item.x, item.y)
-            mask = (root_x_scale > np.max(item.x)) | (root_x_scale < np.min(item.x))
-            new_intensity[mask] = np.nan
-            to_average.append(new_intensity)
-
-        to_average = np.array(to_average)
-        average = np.nanmean(to_average, axis=0)
-        std = np.nanstd(to_average, axis=0)
+        to_average = [SfgAverager.interpolate_spectrum(i, root_x_scale) for i in self.spectra]
+        average, std = SfgAverager.calculate_average(to_average)
 
         # prepare meta data for average spectrum
         if self.name == "default":
@@ -426,6 +410,31 @@ class SfgAverager:
             raise CoverageCalculationImpossibleError(
                 f'Coverage not available for reference samples, integral is {self.integral}!')
 
+    def calculate_day_counter(self):
+        """Collect the dates of measurement for DPPC referencing."""
+        for item in self.spectra:
+
+            date = item.meta["time"].date()
+
+            if date not in self.day_counter:
+                self.day_counter[date] = 1
+            else:
+                self.day_counter[date] += 1
+
+    @staticmethod
+    def interpolate_spectrum(item: SfgSpectrum, root_x_scale: np.ndarray) -> np.ndarray:
+        """
+        Auxiliary function to interpolate an input spectrum to the given root_x_scale.
+
+        :param item: input spectrum
+        :param root_x_scale: scale to interpolate to
+        :return: The interpolated y array
+        """
+        new_intensity = np.interp(root_x_scale, item.x, item.y)
+        mask = (root_x_scale > np.max(item.x)) | (root_x_scale < np.min(item.x))
+        new_intensity[mask] = np.nan
+        return new_intensity
+
     @staticmethod
     def enforce_base() -> np.ndarray:
         reg1 = np.arange(2750, 3055, 5)
@@ -433,6 +442,12 @@ class SfgAverager:
         reg3 = np.arange(3650, 3845, 5)
         new = np.concatenate((reg1, reg2, reg3), axis=None)
         return new
+
+    @staticmethod
+    def calculate_average(x: np.ndarray) -> Tuple[float, float]:
+        average = np.nanmean(x, axis=0)
+        std = np.nanstd(x, axis=0)
+        return average, std
 
 
 class AverageSpectrum(SfgSpectrum):
