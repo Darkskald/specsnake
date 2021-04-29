@@ -232,7 +232,7 @@ class SfgSpectrum(BaseSpectrum):
             temp -= corr
 
             self.baseline_corrected = temp
-            return temp
+            return temppip
 
     def full_baseline_correction(self):
         left, right = self.split_y_into_halfs()
@@ -376,23 +376,29 @@ class SfgAverager:
 
         spec_number = len(self.spectra)
         total = 0
-        logger.info(f'Start of the reference calculating section:')
+        logger.info('*' * 80)
+        logger.info(self.log_header())
+        logger.info(f"""\nStart of the reference calculating section:\n
+        Averager has {spec_number} spectra from {len(self.day_counter)} days.\n""")
 
-        for date in self.day_counter:
+        for d in self.day_counter:
             # divide by total number of spectra in the average
-            logger.info(f'date {date} divided by the total spec number to average {spec_number}')
-        self.day_counter[date] /= spec_number
+            logger.info(f'date {d} has {self.day_counter[d]} spectra, divided by the total spec number to average {spec_number}\n')
+            weight_factor = self.day_counter[d] / spec_number
 
-        # multiply the weighting factor by the integral of the day
-        try:
-            self.day_counter[date] *= self.references[date]
-            total += self.day_counter[date]
-            logger.info(f"""Now multiplying the factor {self.day_counter[date]} 
-                by the reference integral {self.references[date]} resulting in a dppc_factor of {total:-4f}""")
-        except KeyError:
-            logger.error(f'Error: no suitable DPPC reference found four date {date}')
+            # multiply the weighting factor by the integral of the day
+            try:
+                final_factor = weight_factor * self.references[d]
+                logger.info(f"""Now multiply the factor {self.day_counter[d]} 
+                    by the reference integral {self.references[d]} resulting in a dppc_factor of {final_factor}\n""")
+                logger.info(f'')
+                total += final_factor
+            except KeyError:
+                logger.error(f'Error: no suitable DPPC reference found four date {d}')
 
         self.total = total
+        logger.info(f'End of the reference calculating section, final reference is {total}\n')
+        logger.info('*'*80+'\n')
         return total
 
     def calc_coverage(self, baseline_function=None) -> float:
@@ -420,6 +426,16 @@ class SfgAverager:
                 self.day_counter[date] = 1
             else:
                 self.day_counter[date] += 1
+
+    def log_header(self) -> str:
+        out = '\n' + "-" * 80 + '\n'
+        for d in self.day_counter:
+            try:
+                out += f'date: {d} no. spectra: {self.day_counter[d]} ref. integral {self.references[d]}\n'
+            except KeyError:
+                pass
+        out += "-" * 80
+        return out + '\n'
 
     @staticmethod
     def interpolate_spectrum(item: SfgSpectrum, root_x_scale: np.ndarray) -> np.ndarray:
