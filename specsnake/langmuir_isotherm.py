@@ -20,8 +20,8 @@ class LtIsotherm(BaseSpectrum):
         self.compression_factor = self.calc_compression_factor()
         self.x = None
         self.y = None
-        self.x_unit = "area/ cm$^{2}$"
-        self.y_unit = "surface pressure/ mNm$^{-1}$"
+        self.x_unit = "area / cm$^{2}$"
+        self.y_unit = "surface pressure / mNm$^{-1}$"
         self.speed = None
         self.measurement_number = None
         self.lift_off = lift_off

@@ -22,7 +22,7 @@
     # class, this is straightforward and requires only passing of the desired names for x and y unit strings.
     # The constructor must take the configuration for the units to label the plot axis and the name of the columns
     # to use as x and y values, they are passed as a config dictionary
-    config = {'x_unit': 'area/ cm$^2$', 'y_unit': 'surface pressure/ mNm$^{-1}$'}
+    config = {'x_unit': 'area / cm$^2$', 'y_unit': 'surface pressure/ mNm$^{-1}$'}
     constructor = provide_spectrum_constructor('area', 'surface_pressure', **config)
 
     # we want to transform the name such that 'LT_0605_r1_p_2_0.7_#1.dat' -> '0605 r1 p 2 0.7 #1'

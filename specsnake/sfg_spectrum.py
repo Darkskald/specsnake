@@ -39,7 +39,7 @@ class SfgSpectrum(BaseSpectrum):
         self.y = self.raw_intensity / (self.vis_intensity * self.ir_intensity)
         self.baseline_corrected = None
 
-        self.x_unit = "wavenumber/ cm$^{-1}$"
+        self.x_unit = "wavenumber / cm$^{-1}$"
         self.y_unit = "SFG intensity/ arb. u."
         self.name = self.meta["name"]
 
@@ -473,8 +473,8 @@ class AverageSpectrum(SfgSpectrum):
     def __init__(self, wavenumbers: np.ndarray, intensities: np.ndarray, meta: dict[str, Any]):
         self.x = wavenumbers
         self.y = intensities
-        self.x_unit = "wavenumber/ cm$^{-1}$"
-        self.y_unit = "SFG intensity/ arb. u."
+        self.x_unit = "wavenumber / cm$^{-1}$"
+        self.y_unit = "SFG intensity / arb. u."
         self.name = meta["name"]
 
         self.meta = meta

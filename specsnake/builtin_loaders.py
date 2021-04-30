@@ -78,5 +78,5 @@ class _PdConfig:
     col_names = ("2theta", "intensity")
     pd_extractor = ExtractorFactory(column_names=col_names, engine='python', sep='\s+').build()
 
-    config = {'x_unit': 'diffraction angle/ 2$\Theta$', 'y_unit': 'intensity/counts'}
+    config = {'x_unit': 'diffraction angle / 2$\Theta$', 'y_unit': 'intensity/counts'}
     pd_constructor = provide_spectrum_constructor('2theta', 'intensity', **config)
